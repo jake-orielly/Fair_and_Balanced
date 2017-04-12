@@ -2,31 +2,35 @@
 <html>
 <style>
     /*Use of all images for comercial use covered under Creative Commons*/
-    body {
-        background-color: whitesmoke;
+    
+    * {
+        font-family: "Courier New"
     }
     
-    p {
-        font-family: "Lucida Sans Unicode"
+    body {
+        background-color: whitesmoke;
     }
     
     input {
         height: 40px;
         font-size: 24px;
-        font-family: "Lucida Sans Unicode"
+        border: solid 1px #dcdcdc;
+        padding: 0px;
+        width: 200px;
     }
     
     button {
         width: 120px;
         height: 40px;
         font-size: 24px;
-        font-family: "Lucida Sans Unicode"
+        padding: 0px;
     }
     
     select {
         height: 40px;
         font-size: 24px;
-        font-family: "Lucida Sans Unicode"
+        border: solid 1px #dcdcdc;
+        padding: 0px;
     }
     
     div {
@@ -40,62 +44,128 @@
         position:absolute;
         height:150px;
     }
-
+    
+    #firstChar {
+        float: left; 
+        font-size:24px; 
+        margin-right: 8px;
+        margin-top: 8px;
+    }
+    
     .scrollText { 
         position: absolute; 
-        top: -15px; 
-        left: 150px; 
-        width: 100%;
+        top: -35px; 
+        left: 138px; 
+        width: 85%;
         font-size: 48px;
     }
     
 </style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
 <body>
-    <select id="honorific">
+    <h1> Channel 5 News Employment Agreement</h1>
+    <p class="contract" hidden> EMPLOYMENT AGREEMENT dated as of April 12,2017 by and between Modern Medium Communications of Tampa, Inc., a Florida corporation, and <b><span id="employeeName"> [TEXT ERROR] </span></b>.</p>
+    <p class="contract" id="employmentContract" hidden></p>
+    <h2 class="form"> Please print your first and last name. </h2>
+    <select id="honorific" class="form">
         <option value="Mr.">Mr.</option>
         <option value="Mrs.">Mrs.</option>
         <option value="Ms.">Ms.</option>
         <option value="Mx.">Mx.</option>
     </select>
+    <input type="text" id="firstName" class="form" value="John">
+    <input type="text" id="lastName" class="form" value="Smith">
+    <button class="form" onclick="submit()">Submit</button>
     
-    <input type="text" id="firstName" value="First Name">
-    <input type="text" id="lastName" value="Last Name">
-    <button onclick="submit()">Submit</button>
-    
-    <div id="dialogueBox">
-
-        <img id="portrait" src="art/anchor1.jpg" alt="error loading image">
+    <div id="dialogueBox" class="contract" hidden>
+        <img id="portrait" src="art/anchor1.png" alt="error loading image">
         
-        <img id="dialogueBoxImage" src="art/dialogueBox.jpg" alt="error loading image" style="width:304px;height:128px;">
+        <img id="dialogueBoxImage" src="art/dialogueBox.png" alt="error loading image" style="width:304px;height:138px;">
       
         <p class = "scrollText" id="demo"></p>
 
     </div>
     
     <script>
-        document.getElementById("dialogueBoxImage").style.width = window.innerWidth*0.9 + "px";
+        document.getElementById("dialogueBoxImage").style.width = window.innerWidth*0.89 + "px";
+
         var scrollCount;
         var textLoop;
+        var text = ["Congratulations on being hired", "! Director of Programming is a very important position! My name is Linda, I'm the anchor here, I'll be showing you around! Let's get started!"];
+        var maxChar = 64; //maximum number of characters that can fit in the dialogue box
+        var array = [];
+        var currArrayPos;
+        var textDone;
+        var submitted = false;
+        
+        document.onkeypress = function (e) {
+            e = e || window.event;
+            if(e.keyCode == 32)
+                e.preventDefault();
+            if((e.keyCode == 13 || e.keyCode == 32) && textDone) {
+                textDone = false;
+                newScroll(array[currArrayPos]);
+            }
+        };
         
         function submit() {
-            var honorific = document.getElementById("honorific").value;
-            var firstName = document.getElementById("firstName").value;
-            var lastName = document.getElementById("lastName").value;
-            textScroll("Hello " + honorific + " " + firstName + " " + lastName);
+            if (!submitted) {
+                var honorific = document.getElementById("honorific").value;
+                var firstName = document.getElementById("firstName").value;
+                var lastName = document.getElementById("lastName").value;
+                var currText = text[0] + " " + honorific + " " + lastName + text[1];
+                textScroll(currText);
+                document.getElementById("employeeName").innerHTML = firstName + " " + lastName;
+                document.getElementById("employmentContract").innerHTML = employmentContractText;
+                $(".form").hide();
+                $(".contract").show();
+                submitted = true;
+            }
         }
         
+        function clipText (given) {
+            if (given.length > maxChar) {
+                var endPoint;
+                for (var i = maxChar; i > 0; i--) {
+                    if (given.charAt(i) == ' ') {
+                        endPoint = i;
+                        break;
+                    }
+                }
+                
+                array[array.length] = given.substr(0,endPoint);
+                clipText(given.substr(endPoint,given.length));
+            }
+            else {
+                array[array.length] = given;
+            }
+        }
         function textScroll(text) {
+            currArrayPos = 0;
+            clipText(text);
+            newScroll(array[currArrayPos]);
+            textDone = false;
+        }
+        
+        function newScroll (text) {
             scrollCount = 0;
             scroll(text);
-            textLoop = setInterval(function() { scroll(text); }, 50);
+            textLoop = setInterval(function() { scroll(text); }, 40);
         }
         
         function scroll(text) {
             scrollCount++;
             document.getElementById("demo").innerHTML = text.substr(0,scrollCount);
-            if (scrollCount == text.length)
+            if (scrollCount == text.length) {
                 clearInterval(textLoop);
+                currArrayPos += 1;
+                textDone = true;
+            }
         }
+    </script>
+    
+    <script>
+    var employmentContractText = "The Company may terminate this Agreement and all of Employee's rights under this Agreement at any time for any reason. The following are illustrations of \"reason\" but the station is not limited, or bound by these illustrations: (i) misconduct; (ii) insubordination; (iii) failure to perform assigned work in the manner described in Paragraphsl(C)(D)(F) and P) of the Agreement; (iv) using, possessing, selling alcohol or illegal drugs on the Station's property or any other violation of the Company's drug and alcohol abuse policy;(v) dishonesty or deceit that does not serve the Company; (vi) assault or battery; (vii) on-air obscenity or impropriety, oral or visual; (viii) conduct involving moral turpitude; (ix) conduct punishable as a felony under state or federal law; (x) any action involving a breach of the terms of this Agreement; (xi) if, at any time, the Employee fails to conduct himself with dueregard to social conventions and public morals and decency, or if the Employee commits any act or becomes involved in any situation or occurrence which degrades the Employee in society or which brings the Employee into public disrepute, contempt, scandal or ridicule,or shocks, insults or offends the community, or which may reflect unfavorably upon the Employee, the Station, whether or not such information becomes public; (xiii) violation of any Federal Communications Commission rule or regulation; (xiv) incompetence; or (xv) violation of Company absenteeism policy. This Agreement shall be terminated by the death of the Employee as of the date of death. In the event of Employee's death, the Company shall pay to the Employee's legal representatives any accrued but unpaid compensation. All decisions made by the Employee must serve the financial good of the Company and all its affiliate enterpireses, as well as the political goals of the Company and its affiliates whether or not these goals are public knowledge. In the event of Employee's death, the Company shall pay to the Employee's legal representatives any accrued but unpaid compensation. All decisions made by the Employee must serve the financial good of the Company and all its affiliate enterpireses, as well as the political goals of the Company and its affiliates whether or not these goals are public knowledge. In the event of Employee's death, the Company shall pay to the Employee's legal representatives any accrued but unpaid compensation. All decisions made by the Employee must serve the financial good of the Company and all its affiliate enterpireses, as well as the political goals of the Company and its affiliates whether or not these goals are public knowledge. In the event of Employee's death, the Company shall pay to the Employee's legal representatives any accrued but unpaid compensation. All decisions made by the Employee must serve the financial good of the Company and all its affiliate enterpireses, as well as the political goals of the Company and its affiliates whether or not these goals are public knowledge."
     </script>
 </body>
 </html>
