@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="mainStyle.css">
+</head>
+<style>
+    input {
+        height: 40px;
+        font-size: 24px;
+        border: solid 1px #dcdcdc;
+        padding: 0px;
+        width: 200px;
+    }
+    
+    button {
+        width: 120px;
+        height: 40px;
+        font-size: 24px;
+        padding: 0px;
+    }
+    
+    select {
+        height: 40px;
+        font-size: 24px;
+        border: solid 1px #dcdcdc;
+        padding: 0px;
+    }    
+    
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+<body>
+    <h1> Channel 5 News Employment Agreement</h1>
+    <p class="contract" hidden> EMPLOYMENT AGREEMENT dated as of April 12,2017 by and between Modern Medium Communications of Tampa, Inc., a Florida corporation, and <b><span id="employeeName"> [TEXT ERROR] </span></b>.</p>
+    <p class="contract" id="employmentContract" hidden></p>
+    <h2 class="form"> Please print your first and last name. </h2>
+    <select id="honorific" class="form">
+        <option value="Mr.">Mr.</option>
+        <option value="Mrs.">Mrs.</option>
+        <option value="Ms.">Ms.</option>
+        <option value="Mx.">Mx.</option>
+    </select>
+    <input type="text" id="firstName" class="form" value="John">
+    <input type="text" id="lastName" class="form" value="Smith">
+    <button class="form" onclick="submit()">Submit</button>
+    
+    <div id="dialogueBox" class="contract" hidden>
+        <img id="portrait" src="art/anchor1.png" alt="error loading image">
+        
+        <img id="dialogueBoxImage" src="art/dialogueBox.png" alt="error loading image" style="width:304px;height:138px;">
+      
+        <p class = "scrollText" id="demo"></p>
+    </div>
+    
+    <script>
+        var text = ["Congratulations on being hired", "! Director of Programming is a very important position! My name is Linda, I'm the anchor here, I'll be showing you around! Let's get started!"];
+        var maxChar = 64; //maximum number of characters that can fit in the dialogue box
+        var submitted = false;
+        var phase = 0;
+        
+        document.onkeypress = function (e) {
+            e = e || window.event;
+            if(e.keyCode == 32)
+                e.preventDefault();
+            if(e.keyCode == 13 || e.keyCode == 32)
+                buttonPressed();
+        };
+        
+        function buttonPressed() {
+            if (phase == 1)
+                nextPage();
+            else if (getTextDone()) {
+                setTextDone(false);
+                newScroll(getTextArray()[getCurrArrayPos()]);
+            }
+        }
+        
+        function submit() {
+            if (!submitted) {
+                var honorific = document.getElementById("honorific").value;
+                var firstName = document.getElementById("firstName").value;
+                var lastName = document.getElementById("lastName").value;
+                var currText = text[0] + " " + honorific + " " + lastName + text[1];
+                textScroll(currText);
+                document.getElementById("employeeName").innerHTML = firstName + " " + lastName;
+                document.getElementById("employmentContract").innerHTML = employmentContractText;
+                $(".form").hide();
+                $(".contract").show();
+                submitted = true;
+            }
+        }
+        
+        function nextPage() {
+            window.location.replace("module0.html");
+        }
+        
+        function getPhase() {
+            return phase;
+        }
+        
+        function incrementPhase() {
+            phase++;
+        }
+    </script>
+    
+    <script src="textScroller.js">
+        
+    </script>
+    
+    <script src="contractText.js"></script>
+</body>
+</html>
