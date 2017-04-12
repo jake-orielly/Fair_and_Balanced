@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<style>
+    /*Use of all images for comercial use covered under Creative Commons*/
+    body {
+        background-color: whitesmoke;
+    }
+    
+    p {
+        font-family: "Lucida Sans Unicode"
+    }
+    
+    input {
+        height: 40px;
+        font-size: 24px;
+        font-family: "Lucida Sans Unicode"
+    }
+    
+    button {
+        width: 120px;
+        height: 40px;
+        font-size: 24px;
+        font-family: "Lucida Sans Unicode"
+    }
+    
+    select {
+        height: 40px;
+        font-size: 24px;
+        font-family: "Lucida Sans Unicode"
+    }
+    
+    div {
+        position:absolute;
+        bottom:0;
+        width:100%;
+        height:60px;
+    }
+    
+    #dialogueBox {
+        position:absolute;
+        height:150px;
+    }
+
+    .scrollText { 
+        position: absolute; 
+        top: -15px; 
+        left: 150px; 
+        width: 100%;
+        font-size: 48px;
+    }
+    
+</style>
+<body>
+    <select id="honorific">
+        <option value="Mr.">Mr.</option>
+        <option value="Mrs.">Mrs.</option>
+        <option value="Ms.">Ms.</option>
+        <option value="Mx.">Mx.</option>
+    </select>
+    
+    <input type="text" id="firstName" value="First Name">
+    <input type="text" id="lastName" value="Last Name">
+    <button onclick="submit()">Submit</button>
+    
+    <div id="dialogueBox">
+
+        <img id="portrait" src="art/anchor1.jpg" alt="error loading image">
+        
+        <img id="dialogueBoxImage" src="art/dialogueBox.jpg" alt="error loading image" style="width:304px;height:128px;">
+      
+        <p class = "scrollText" id="demo"></p>
+
+    </div>
+    
+    <script>
+        document.getElementById("dialogueBoxImage").style.width = window.innerWidth*0.9 + "px";
+        var scrollCount;
+        var textLoop;
+        
+        function submit() {
+            var honorific = document.getElementById("honorific").value;
+            var firstName = document.getElementById("firstName").value;
+            var lastName = document.getElementById("lastName").value;
+            textScroll("Hello " + honorific + " " + firstName + " " + lastName);
+        }
+        
+        function textScroll(text) {
+            scrollCount = 0;
+            scroll(text);
+            textLoop = setInterval(function() { scroll(text); }, 50);
+        }
+        
+        function scroll(text) {
+            scrollCount++;
+            document.getElementById("demo").innerHTML = text.substr(0,scrollCount);
+            if (scrollCount == text.length)
+                clearInterval(textLoop);
+        }
+    </script>
+</body>
+</html>
