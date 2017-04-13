@@ -4,10 +4,91 @@
     <link rel="stylesheet" type="text/css" href="mainStyle.css">
 </head>
 <style>
+    
+    table {
+        padding-left: 10px;
+    }
+    
+    td {
+        font-size: 18px;
+        float:left;
+    }
+    
+    .statBar {
+        margin-top: 2px;
+        width:6px;
+        height:14px;
+        border:2px solid #000;
+        float:left; 
+        margin-left:1px
+    }
+    
+    ul.tab {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        border: 1px solid #ccc;
+        background-color: #f1f1f1;
+    }
+    /* Float the list items side by side */
+    ul.tab li {float: left;}
+    /* Style the links inside the list items */
+    ul.tab li a {
+        display: inline-block;
+        color: black;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-size: 17px;
+    }
+    /* Change background color of links on hover */
+    ul.tab li a:hover {
+        background-color: #ddd;
+    }
+    /* Create an active/current tabLink class */
+    ul.tab li a:focus, .active {
+        background-color: #ccc;
+    }
+    /* Style the tab content */
+    .tabContent {
+        display: none;
+        padding: 6px 12px;
+        border: 1px solid #ccc;
+        border-top: none;
+    }
 </style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
 <body>
-    <h1> Hello </h1>
+    <h1> Channel 5 Newsroom </h1>
+    
+    <ul class="tab">
+        <li><a href="javascript:void(0)" class="tabLinks active" onclick="openTab(event, 'Board')">Board</a></li>
+        <li><a href="javascript:void(0)" class="tabLinks" onclick="openTab(event, 'Advertising')">Advertising</a></li>
+        <li><a href="javascript:void(0)" class="tabLinks" onclick="openTab(event, 'Anchors')">Anchors</a></li>
+    </ul>
+    
+    <div id='Board' class = 'tabContent'>
+        <h2> Board </h2>
+        <table id="statsTable">
+        </table>
+    </div>
+    
+    <div id='Advertising' class = 'tabContent'>
+        <h2> Advertising </h2>
+        <table id="advertisingTable">
+        </table>
+    </div>
+    
+    <div id='Anchors' class = 'tabContent'>
+        <h1> Anchors </h1>
+        <img src="art/anchor1.png" style="float:left" alt="error loading image">
+        <table id="anchorTable">
+        </table>
+    </div>
+    
+    
+    
     <div id="dialogueBox" class="contract" hidden>
         <img id="portrait" src="art/anchor1.png" alt="error loading image">
         
@@ -15,6 +96,87 @@
       
         <p class = "scrollText" id="demo"></p>
     </div>
+    
+    <script>
+        //Note: party colors #009933 & #ff6600
+        var linda = {name:"Linda",age:47, salary: 18500, tagline: "Loyal, experienced, and will always remember your birthday.", experience:7,attractiveness:3};
+        var anchorList = [linda];
+        
+        var money = 1000;
+        var viewers = 4500;
+        
+        startTab();
+        displayStats();
+        displayAdvertising();
+        displayAnchors();
+        
+        
+        function startTab() {
+            var tabLinks = document.getElementsByClassName("tabLinks");
+            document.getElementById("Board").style.display = "block";
+            tabLinks += " active";
+        }    
+        
+        function displayStats() {
+            var table = "<tr><td style='font-size:24px'>Money: " + numToDisplayNum(money,true) + "</td></tr>";
+            table += "<tr><td style='font-size:24px'>Viewers: " + numToDisplayNum(viewers,false) + "</td></tr>";
+            document.getElementById("statsTable").innerHTML = table;
+        }
+        
+        function displayAnchors() {
+            var table = "<tr><td style='font-size:24px'><u><b>" + anchorList[0].name + ", " + anchorList[0].age + "</b></u></td></tr>";
+            table += "<tr><td>Salary: " + numToDisplayNum(anchorList[0].salary,true) + "</td></tr>";
+            table += "<tr><td>Experience: </td><td>";
+            for (var i = 0; i < anchorList[0].experience; i++)
+                table += "<div class='statBar' style='background:#006666'></div>";
+            table += "</td></tr>"
+            table += "<tr><td>Appearance: </td><td>";
+            for (var i = 0; i < anchorList[0].attractiveness; i++)
+                table += "<div class='statBar' style='background:#ff3300'></div>";
+            table += "</td></tr>";
+            table += "<tr><td><i>" + anchorList[0].tagline + "</i></td></tr>";
+            
+            document.getElementById("anchorTable").innerHTML = table;
+        }
+        
+        function displayAdvertising() {
+            var table = "<tr><td>Hello</td></tr>"
+            document.getElementById("advertisingTable").innerHTML = table;
+        }
+        
+        function openTab(evt, tabName) {
+            var i, tabContent, tabLinks;
+            tabContent = document.getElementsByClassName("tabContent");
+            for (i = 0; i < tabContent.length; i++) {
+                tabContent[i].style.display = "none";
+            }
+            tabLinks = document.getElementsByClassName("tabLinks");
+            for (i = 0; i < tabLinks.length; i++) {
+                tabLinks[i].className = tabLinks[i].className.replace(" active", "");
+            }
+
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }    
+        
+        function numToDisplayNum(num, dollar) {
+            var result = parseInt(num/1000) + "," + num%1000;
+            
+            result = longEnough(result); //ex: longEnough("10,0") = "10,000"
+            
+            if (dollar)
+                result = "$" + result;
+
+            return result;
+        }
+        
+        function longEnough(given) {
+            if (given.split(",")[1].length < 3)
+                return longEnough(given + "0");
+            else 
+                return given;
+        }
+    </script>
     
     <script src="textScroller.js">
         
