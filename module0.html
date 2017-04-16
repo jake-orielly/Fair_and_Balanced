@@ -86,6 +86,7 @@
         <p class="adPlanning" id="adAvailible" hidden> ERROR </p>
         <p class="adPlanning" id="adTotal" hidden> ERROR </p>
         <button class="adPlanning" onclick="adBack()" hidden> Back </button>
+        <p class="adPlanning" id="adRevenue" hidden> Total Revenue: $0 </p>
         <table class="adPlanning" id="advertisingTable" style="margin-top:15px" hidden>
         </table>
     </div>
@@ -112,10 +113,14 @@
         var money = 100000;
         var viewers = 4500;
         
-        var ad1 = {name:"Coke", value:600, image:"colaSoda.png", minutes:5};
-        var ad2 = {name:"Pepsi", value:600, image:"colaSoda.png", minutes:6};
-        var ad3 = {name:"Guns", value:800, image:"colaSoda.png",minutes:4};
-        var ads = [ad1,ad2,ad3];
+        var adRevenue = 0;
+        var adTimeAvailible;
+        
+        var ad1 = {name:"Coke", value:5000, image:"colaSoda.png", minutes:5};
+        var ad2 = {name:"Pepsi", value:6000, image:"colaSoda.png", minutes:6};
+        var ad3 = {name:"Guns", value:4000, image:"colaSoda.png",minutes:4};
+        var ad4 = {name:"Cars", value:8000, image:"colaSoda.png",minutes:8};
+        var ads = [ad1,ad2,ad3,ad4];
         
         startTab();
         displayStats();
@@ -181,28 +186,46 @@
         
         function buyButtonClick(given) {
             var button = document.getElementById("adButton" + given);
-            var newVal;
-            button.className = "adSellButton";
-            button.innerHTML = "Remove";
-            button.onclick = function(){sellButtonClick(given)};
-            newVal = document.getElementById("adAvailible").innerHTML.split("Availible ");
-            newVal = newVal[1].split(":00")[0]; 
-            newVal = parseInt(newVal); //Pulls actual number out of text
-            newVal = newVal - ads[given].minutes;
-            document.getElementById("adAvailible").innerHTML = "Availible " + newVal + ":00";
+            if (adTimeAvailible - ads[given].minutes >= 0) {
+                adTimeAvailible = adTimeAvailible - ads[given].minutes;
+                button.className = "adSellButton";
+                button.innerHTML = "Remove";
+                button.onclick = function(){sellButtonClick(given)};
+                document.getElementById("adAvailible").innerHTML = "Availible " + adTimeAvailible + ":00";
+                adRevenue += ads[given].value;
+                document.getElementById("adRevenue").innerHTML = "Total Revenue: " + numToDisplayNum(adRevenue, true);
+            }
+            else {
+                warningFlash("adAvailible");
+            }
+        }
+        
+        function warningFlash(id) {
+            var count = 0;
+            var weight = document.getElementById(id).style.fontWeight;
+            var flash = setInterval(function() {
+                document.getElementById(id).style.fontWeight = "900";
+                if (count % 2 == 0)
+                    document.getElementById(id).style.color = "red";  
+                else 
+                    document.getElementById(id).style.color = "black";
+                if (count == 11) {
+                    clearInterval(flash);
+                    document.getElementById(id).style.fontWeight = weight;
+                }
+                count++;
+                },150)  ;
         }
         
         function sellButtonClick(given) {
             var button = document.getElementById("adButton" + given);
-            var newVal;
             button.className = "adBuyButton";
             button.innerHTML = "Add";
             button.onclick = function(){buyButtonClick(given)};
-            newVal = document.getElementById("adAvailible").innerHTML.split("Availible ");
-            newVal = newVal[1].split(":00")[0]; //Pulls actual number out of text
-            newVal = parseInt(newVal);
-            newVal = newVal + ads[given].minutes;
-            document.getElementById("adAvailible").innerHTML = "Availible " + newVal + ":00";
+            adTimeAvailible = adTimeAvailible + ads[given].minutes;
+            document.getElementById("adAvailible").innerHTML = "Availible " + adTimeAvailible + ":00";
+            adRevenue -= ads[given].value;
+            document.getElementById("adRevenue").innerHTML = "Total Revenue: " + numToDisplayNum(adRevenue, true);
         }
         
         function adTimingConfirm() {
@@ -214,6 +237,12 @@
         function adBack() {
             $(".adTiming").show();
             $(".adPlanning").hide();
+            var button;
+            for (var i = 0; i < ads.length; i++) {
+                button = document.getElementById("adButton" + i);
+                if (button.innerHTML == "Remove")
+                    sellButtonClick(i);
+            }
         }
         
         function sliderUpdate() {
@@ -224,6 +253,8 @@
         
         function updateAdAmounts() {
             var sliderValue = document.getElementById("adRange").value;
+            document.getElementById("adRevenue").innerHTML = "Total Revenue: " + numToDisplayNum(adRevenue, true);
+            adTimeAvailible = sliderValue;
             document.getElementById("adAvailible").innerHTML = "Availible " + sliderValue + ":00";
             document.getElementById("adAvailible").style = "display:inline; margin-right:30px";
             document.getElementById("adTotal").innerHTML = "Total: " + sliderValue + ":00";
