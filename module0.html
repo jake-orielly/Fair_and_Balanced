@@ -2,9 +2,10 @@
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="mainStyle.css">
+    <link rel="stylesheet" type="text/css" href="sliderStyle.css">
 </head>
 <style>
-    
+
     table {
         padding-left: 10px;
     }
@@ -76,7 +77,13 @@
     
     <div id='Advertising' class = 'tabContent'>
         <h2> Advertising </h2>
-        <table id="advertisingTable">
+        <input id="adRange" class="adTiming" type="range" min = "5" max="25">
+        <p id="adValue" class="adTiming"> ERROR </p>
+        <p id="newsValue" class="adTiming"> ERROR </p>
+        <button class="adTiming" onclick="adTimingConfirm()"> Confirm </button>
+        <p class="adPlanning" id="adAvailible" hidden> ERROR </p>
+        <p class="adPlanning" id="adTotal" hidden> ERROR </p>
+        <table class="adPlanning" id="advertisingTable" style="margin-top:15px" hidden>
         </table>
     </div>
     
@@ -86,8 +93,6 @@
         <table id="anchorTable">
         </table>
     </div>
-    
-    
     
     <div id="dialogueBox" class="contract" hidden>
         <img id="portrait" src="art/anchor1.png" alt="error loading image">
@@ -99,17 +104,23 @@
     
     <script>
         //Note: party colors #009933 & #ff6600
-        var linda = {name:"Linda",age:47, salary: 18500, tagline: "Loyal, experienced, and will always remember your birthday.", experience:7,attractiveness:3};
+        var linda = {name:"Linda",age:47, salary: 36500, tagline: "Loyal, experienced, and will always remember your birthday.", experience:7,attractiveness:3};
         var anchorList = [linda];
         
-        var money = 1000;
+        var money = 100000;
         var viewers = 4500;
+        
+        var ad1 = {name:"Coke", value:600, image:"colaSoda.png"};
+        var ad2 = {name:"Pepsi", value:600, image:"colaSoda.png"};
+        var ad3 = {name:"Guns", value:800, image:"colaSoda.png"};
+        var ads = [ad1,ad2,ad3];
         
         startTab();
         displayStats();
         displayAdvertising();
         displayAnchors();
         
+        var sliderLoop = setInterval(function() { sliderUpdate();}, 30);
         
         function startTab() {
             var tabLinks = document.getElementsByClassName("tabLinks");
@@ -140,7 +151,14 @@
         }
         
         function displayAdvertising() {
-            var table = "<tr><td>Hello</td></tr>"
+            var table = "";
+            for (var i = 0; i < ads.length; i++) {
+                table += "<tr>";
+                table += "<td><img src='art/" + "colaSoda.png" + "' style='width:64px; height:32px; float:left' alt='error loading image'></td>";
+                table += "<td style='margin-top:8px'>" + ads[i].name + ": </td>";
+                table += "<td style='margin-top:8px'>" + ads[i].value + "</td>";
+                table += "</tr>";
+            }
             document.getElementById("advertisingTable").innerHTML = table;
         }
         
@@ -158,6 +176,26 @@
             document.getElementById(tabName).style.display = "block";
             evt.currentTarget.className += " active";
         }    
+        
+        function adTimingConfirm() {
+            $(".adTiming").hide();
+            $(".adPlanning").show();
+            updateAdAmounts();
+        }
+        
+        function sliderUpdate() {
+            var sliderValue = document.getElementById("adRange").value;
+            document.getElementById("adValue").innerHTML = "Advertisements " + sliderValue + ":00";
+            document.getElementById("newsValue").innerHTML = "News " + (60-sliderValue) + ":00";
+        }
+        
+        function updateAdAmounts() {
+            var sliderValue = document.getElementById("adRange").value;
+            document.getElementById("adAvailible").innerHTML = "Availible " + sliderValue + ":00";
+            document.getElementById("adAvailible").style = "display:inline; margin-right:30px";
+            document.getElementById("adTotal").innerHTML = "Total: " + sliderValue + ":00";
+            document.getElementById("adTotal").style = "display:inline";
+        }
         
         function numToDisplayNum(num, dollar) {
             var result = parseInt(num/1000) + "," + num%1000;
