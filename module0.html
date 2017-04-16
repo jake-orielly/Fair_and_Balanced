@@ -2,7 +2,7 @@
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="mainStyle.css">
-    <link rel="stylesheet" type="text/css" href="sliderStyle.css">
+    <link rel="stylesheet" type="text/css" href="elementStyle.css">
 </head>
 <style>
 
@@ -12,6 +12,8 @@
     
     td {
         font-size: 18px;
+        margin-bottom: 10px;
+        margin-right: 5px;
         float:left;
     }
     
@@ -83,6 +85,7 @@
         <button class="adTiming" onclick="adTimingConfirm()"> Confirm </button>
         <p class="adPlanning" id="adAvailible" hidden> ERROR </p>
         <p class="adPlanning" id="adTotal" hidden> ERROR </p>
+        <button class="adPlanning" onclick="adBack()" hidden> Back </button>
         <table class="adPlanning" id="advertisingTable" style="margin-top:15px" hidden>
         </table>
     </div>
@@ -96,7 +99,6 @@
     
     <div id="dialogueBox" class="contract" hidden>
         <img id="portrait" src="art/anchor1.png" alt="error loading image">
-        
         <img id="dialogueBoxImage" src="art/dialogueBox.png" alt="error loading image" style="width:304px;height:138px;">
       
         <p class = "scrollText" id="demo"></p>
@@ -110,9 +112,9 @@
         var money = 100000;
         var viewers = 4500;
         
-        var ad1 = {name:"Coke", value:600, image:"colaSoda.png"};
-        var ad2 = {name:"Pepsi", value:600, image:"colaSoda.png"};
-        var ad3 = {name:"Guns", value:800, image:"colaSoda.png"};
+        var ad1 = {name:"Coke", value:600, image:"colaSoda.png", minutes:5};
+        var ad2 = {name:"Pepsi", value:600, image:"colaSoda.png", minutes:6};
+        var ad3 = {name:"Guns", value:800, image:"colaSoda.png",minutes:4};
         var ads = [ad1,ad2,ad3];
         
         startTab();
@@ -155,8 +157,8 @@
             for (var i = 0; i < ads.length; i++) {
                 table += "<tr>";
                 table += "<td><img src='art/" + "colaSoda.png" + "' style='width:64px; height:32px; float:left' alt='error loading image'></td>";
-                table += "<td style='margin-top:8px'>" + ads[i].name + ": </td>";
-                table += "<td style='margin-top:8px'>" + ads[i].value + "</td>";
+                table += "<td style='margin-top:8px'>" + ads[i].name + ": " + numToDisplayNum(ads[i].value,true) + " for " + ads[i].minutes + " minutes." + "</td>";
+                table += "<td><button id='adButton" + i + "' class='adBuyButton' onclick='buyButtonClick(" + i + ")'>Add</button></td>"
                 table += "</tr>";
             }
             document.getElementById("advertisingTable").innerHTML = table;
@@ -177,10 +179,41 @@
             evt.currentTarget.className += " active";
         }    
         
+        function buyButtonClick(given) {
+            var button = document.getElementById("adButton" + given);
+            var newVal;
+            button.className = "adSellButton";
+            button.innerHTML = "Remove";
+            button.onclick = function(){sellButtonClick(given)};
+            newVal = document.getElementById("adAvailible").innerHTML.split("Availible ");
+            newVal = newVal[1].split(":00")[0]; 
+            newVal = parseInt(newVal); //Pulls actual number out of text
+            newVal = newVal - ads[given].minutes;
+            document.getElementById("adAvailible").innerHTML = "Availible " + newVal + ":00";
+        }
+        
+        function sellButtonClick(given) {
+            var button = document.getElementById("adButton" + given);
+            var newVal;
+            button.className = "adBuyButton";
+            button.innerHTML = "Add";
+            button.onclick = function(){buyButtonClick(given)};
+            newVal = document.getElementById("adAvailible").innerHTML.split("Availible ");
+            newVal = newVal[1].split(":00")[0]; //Pulls actual number out of text
+            newVal = parseInt(newVal);
+            newVal = newVal + ads[given].minutes;
+            document.getElementById("adAvailible").innerHTML = "Availible " + newVal + ":00";
+        }
+        
         function adTimingConfirm() {
             $(".adTiming").hide();
             $(".adPlanning").show();
             updateAdAmounts();
+        }
+        
+        function adBack() {
+            $(".adTiming").show();
+            $(".adPlanning").hide();
         }
         
         function sliderUpdate() {
@@ -198,9 +231,15 @@
         }
         
         function numToDisplayNum(num, dollar) {
-            var result = parseInt(num/1000) + "," + num%1000;
+            var result;
             
-            result = longEnough(result); //ex: longEnough("10,0") = "10,000"
+            if (num > 999) {
+                result = parseInt(num/1000) + "," + num%1000;
+                result = longEnough(result); //ex: longEnough("10,0") = "10,000"
+            }
+            
+            else 
+                result = num;
             
             if (dollar)
                 result = "$" + result;
