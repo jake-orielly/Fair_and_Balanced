@@ -5,7 +5,9 @@
     <link rel="stylesheet" type="text/css" href="elementStyle.css">
 </head>
 <style>
-
+    h1 {
+        text-decoration: underline;
+    }
     table {
         padding-left: 10px;
     }
@@ -60,11 +62,21 @@
         border: 1px solid #ccc;
         border-top: none;
     }
+    
+    #newsroomHeader{
+        margin-left: 7%;
+        margin-bottom: 0px;
+        font-family:Futura, "Trebuchet MS", Arial, sans-serif;
+        font-style: italic;
+        font-size: 48px;
+        text-decoration: underline;
+    }
 </style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
 <body>
-    <h1> Channel 5 Newsroom </h1>
-    
+    <img src="art/logo.png" style="float:left; width: 64px; height:64px;" alt="error loading image">
+    <p id="newsroomHeader"> Channel 5 Newsroom </p>
+    <br>
     <ul class="tab">
         <li><a href="javascript:void(0)" class="tabLinks active" onclick="openTab(event, 'Board')">Board</a></li>
         <li><a href="javascript:void(0)" class="tabLinks" onclick="openTab(event, 'Advertising')">Advertising</a></li>
@@ -72,13 +84,13 @@
     </ul>
     
     <div id='Board' class = 'tabContent'>
-        <h2> Board </h2>
+        <h1> Board </h1>
         <table id="statsTable">
         </table>
     </div>
     
     <div id='Advertising' class = 'tabContent'>
-        <h2> Advertising </h2>
+        <h1> Advertising </h1>
         <input id="adRange" class="adTiming" type="range" min = "5" max="25">
         <p id="adValue" class="adTiming"> ERROR </p>
         <p id="newsValue" class="adTiming"> ERROR </p>
@@ -87,6 +99,7 @@
         <p class="adPlanning" id="adTotal" hidden> ERROR </p>
         <button class="adPlanning" onclick="adBack()" hidden> Back </button>
         <p class="adPlanning" id="adRevenue" hidden> Total Revenue: $0 </p>
+        <button class="adPlanning" id="adChosenConfirm"  onclick="displayStories()" hidden> Confirm </button>
         <table class="adPlanning" id="advertisingTable" style="margin-top:15px" hidden>
         </table>
     </div>
@@ -116,7 +129,13 @@
         var adRevenue = 0;
         var adTimeAvailible;
         
-        var ad1 = {name:"Coke", value:5000, image:"colaSoda.png", minutes:5};
+        var story1 = {name:"Local Politics", effect:"none"};
+        var story2 = {name:"National Politics", effect:"rep 5"};
+        var story3 = {name:"Global Politics", effect:"none"};
+        var story4 = {name:"Local Crime", effect:"none"};
+        var stories = [story1,story2,story3];
+        
+        var ad1 = {name:"Soca Cola", value:5000, image:"colaSoda.png", minutes:5};
         var ad2 = {name:"Pepsi", value:6000, image:"colaSoda.png", minutes:6};
         var ad3 = {name:"Guns", value:4000, image:"colaSoda.png",minutes:4};
         var ad4 = {name:"Cars", value:8000, image:"colaSoda.png",minutes:8};
@@ -141,6 +160,17 @@
             document.getElementById("statsTable").innerHTML = table;
         }
         
+        function displayStories() {
+            table = "";
+            for (var i = 0; i < stories.length; i++) {
+                table += "<tr>";
+                table += "<td style='font-size:28px'>" + stories[i].name + "</td>";
+                table += "<td><button id='addStory" + i + "' class='addButton' onclick='addStoryClick(" + i + ")'>Add</button></td>"
+                table += "</tr>";
+            }
+            document.getElementById("advertisingTable").innerHTML = table;
+        }
+        
         function displayAnchors() {
             var table = "<tr><td style='font-size:24px'><u><b>" + anchorList[0].name + ", " + anchorList[0].age + "</b></u></td></tr>";
             table += "<tr><td>Salary: " + numToDisplayNum(anchorList[0].salary,true) + "</td></tr>";
@@ -163,7 +193,7 @@
                 table += "<tr>";
                 table += "<td><img src='art/" + "colaSoda.png" + "' style='width:64px; height:32px; float:left' alt='error loading image'></td>";
                 table += "<td style='margin-top:8px'>" + ads[i].name + ": " + numToDisplayNum(ads[i].value,true) + " for " + ads[i].minutes + " minutes." + "</td>";
-                table += "<td><button id='adButton" + i + "' class='adBuyButton' onclick='buyButtonClick(" + i + ")'>Add</button></td>"
+                table += "<td><button id='adButton" + i + "' class='addButton' onclick='buyButtonClick(" + i + ")'>Add</button></td>"
                 table += "</tr>";
             }
             document.getElementById("advertisingTable").innerHTML = table;
@@ -188,7 +218,7 @@
             var button = document.getElementById("adButton" + given);
             if (adTimeAvailible - ads[given].minutes >= 0) {
                 adTimeAvailible = adTimeAvailible - ads[given].minutes;
-                button.className = "adSellButton";
+                button.className = "sellButton";
                 button.innerHTML = "Remove";
                 button.onclick = function(){sellButtonClick(given)};
                 document.getElementById("adAvailible").innerHTML = "Availible " + adTimeAvailible + ":00";
@@ -198,6 +228,10 @@
             else {
                 warningFlash("adAvailible");
             }
+        }
+        
+        function addStoryClick(given) {
+            alert(given);
         }
         
         function warningFlash(id) {
@@ -219,7 +253,7 @@
         
         function sellButtonClick(given) {
             var button = document.getElementById("adButton" + given);
-            button.className = "adBuyButton";
+            button.className = "addButton";
             button.innerHTML = "Add";
             button.onclick = function(){buyButtonClick(given)};
             adTimeAvailible = adTimeAvailible + ads[given].minutes;

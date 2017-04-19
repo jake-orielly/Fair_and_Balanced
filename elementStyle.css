@@ -88,7 +88,7 @@ input[type=range]:focus::-ms-fill-upper {
 
 /*source: http://www.bestcssbuttongenerator.com/#/0 */
 
-.adBuyButton {
+.addButton {
     background-color:#44c767;
     -moz-border-radius:5px;
     -webkit-border-radius:5px;
@@ -103,15 +103,15 @@ input[type=range]:focus::-ms-fill-upper {
     text-decoration:none;
     text-shadow:0px 1px 0px #2f6627;
 }
-.adBuyButton:hover {
+.addButton:hover {
     background-color:#5cbf2a;
 }
-.adBuyButton:active {
+.addButton:active {
     position:relative;
     top:1px;
 }
 
-.adSellButton {
+.sellButton {
     background-color:#d0451b;
     -moz-border-radius:5px;
     -webkit-border-radius:5px;
@@ -126,10 +126,10 @@ input[type=range]:focus::-ms-fill-upper {
     text-decoration:none;
     text-shadow:0px 1px 0px #2f6627;
 }
-.adSellButton:hover {
+.sellButton:hover {
     background-color:#e24437;
 }
-.adSellButton:active {
+.sellButton:active {
     position:relative;
     top:1px;
 }
