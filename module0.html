@@ -19,6 +19,17 @@
         float:left;
     }
     
+    button {
+        background-color:#FFFFFF;
+        -moz-border-radius:5px;
+        -webkit-border-radius:5px;
+        border-radius:5px;
+        font-family:Arial;
+        font-size:12px;
+        padding:3px 6px;
+        color:#000000;
+    }
+    
     .statBar {
         margin-top: 2px;
         width:6px;
@@ -79,7 +90,7 @@
     <br>
     <ul class="tab">
         <li><a href="javascript:void(0)" class="tabLinks active" onclick="openTab(event, 'Board')">Board</a></li>
-        <li><a href="javascript:void(0)" class="tabLinks" onclick="openTab(event, 'Advertising')">Advertising</a></li>
+        <li><a href="javascript:void(0)" class="tabLinks" onclick="openTab(event, 'Broadcast')">Broadcast</a></li>
         <li><a href="javascript:void(0)" class="tabLinks" onclick="openTab(event, 'Anchors')">Anchors</a></li>
     </ul>
     
@@ -89,17 +100,18 @@
         </table>
     </div>
     
-    <div id='Advertising' class = 'tabContent'>
-        <h1> Advertising </h1>
+    <div id='Broadcast' class = 'tabContent'>
+        <table class="storyPlanning" id="storyTable" style="float: right; display:inline; text-align:right" hidden><th><h1 class="storyPlanning" hidden>Broadcast </h1></th></table>
+        <h1 id="broadcastHeader"> Advertising </h1>
         <input id="adRange" class="adTiming" type="range" min = "5" max="25">
         <p id="adValue" class="adTiming"> ERROR </p>
         <p id="newsValue" class="adTiming"> ERROR </p>
         <button class="adTiming" onclick="adTimingConfirm()"> Confirm </button>
         <p class="adPlanning" id="adAvailible" hidden> ERROR </p>
         <p class="adPlanning" id="adTotal" hidden> ERROR </p>
-        <button class="adPlanning" onclick="adBack()" hidden> Back </button>
+        <button class="adPlanning" id="adChosenConfirm" onclick="toStoryMode()" hidden> Confirm </button>
+        <button class="adPlanning" id="backButton" onclick="adBack()" hidden> Back </button>
         <p class="adPlanning" id="adRevenue" hidden> Total Revenue: $0 </p>
-        <button class="adPlanning" id="adChosenConfirm"  onclick="displayStories()" hidden> Confirm </button>
         <table class="adPlanning" id="advertisingTable" style="margin-top:15px" hidden>
         </table>
     </div>
@@ -128,12 +140,15 @@
         
         var adRevenue = 0;
         var adTimeAvailible;
+        var storyTimeAvailible;
         
         var story1 = {name:"Local Politics", effect:"none"};
         var story2 = {name:"National Politics", effect:"rep 5"};
         var story3 = {name:"Global Politics", effect:"none"};
         var story4 = {name:"Local Crime", effect:"none"};
         var stories = [story1,story2,story3];
+        
+        var chosenStories = [];
         
         var ad1 = {name:"Soca Cola", value:5000, image:"colaSoda.png", minutes:5};
         var ad2 = {name:"Pepsi", value:6000, image:"colaSoda.png", minutes:6};
@@ -160,6 +175,31 @@
             document.getElementById("statsTable").innerHTML = table;
         }
         
+        function toStoryMode() {
+            var sliderValue = document.getElementById("adRange").value;
+            var timeAvailible = 60-parseInt(sliderValue);
+            chosenStories = [];
+            document.getElementById("adAvailible").innerHTML = "Availible " + timeAvailible + ":00";
+            document.getElementById("adTotal").innerHTML = "Total: " + timeAvailible + ":00";
+            storyTimeAvailible = 60 - adTimeAvailible;
+            document.getElementById("backButton").onclick = function() {storyBackPress()};
+            document.getElementById("broadcastHeader").innerHTML = "News Items";
+            $("#adRevenue").hide();
+            $("#adChosenConfirm").hide();
+            $(".storyPlanning").show();
+            displayStories();
+        }
+        
+        function storyBackPress() {
+            $(".adPlanning").show();
+            $(".storyPlanning").hide();
+            document.getElementById("broadcastHeader").innerHTML = "Advertising";
+            adRevenue = 0;
+            document.getElementById("backButton").onclick = function() {adBack()};
+            updateAdAmounts();
+            displayAdvertising();
+        }
+        
         function displayStories() {
             table = "";
             for (var i = 0; i < stories.length; i++) {
@@ -169,6 +209,15 @@
                 table += "</tr>";
             }
             document.getElementById("advertisingTable").innerHTML = table;
+        }
+        
+        function displayBroadcast() {
+            table = "";
+            table += "<th><h1 class='storyPlanning'> Broadcast </h1></th>"; 
+            for (var i = 0; i < chosenStories.length; i++) {
+                table += "<tr><td>" + chosenStories[i] + "</td></tr>";
+            }
+            document.getElementById("storyTable").innerHTML = table;
         }
         
         function displayAnchors() {
@@ -231,7 +280,34 @@
         }
         
         function addStoryClick(given) {
-            alert(given);
+            var button = document.getElementById("addStory" + given);
+            if (storyTimeAvailible - 20 >= 0) {
+                storyTimeAvailible = storyTimeAvailible - 20;
+                button.className = "sellButton";
+                button.innerHTML = "Remove";
+                button.onclick = function(){removeStoryClick(given)};
+                document.getElementById("adAvailible").innerHTML = "Availible " + storyTimeAvailible + ":00";
+                chosenStories[chosenStories.length] = stories[given].name;
+                displayBroadcast();
+            }
+            else {
+                warningFlash("adAvailible");
+            }
+        }
+        
+        function removeStoryClick(given) {
+            var button = document.getElementById("addStory" + given);
+            var index;
+            button.className = "addButton";
+            button.innerHTML = "Add";
+            button.onclick = function(){addStoryClick(given)};
+            storyTimeAvailible = storyTimeAvailible + 20;
+            document.getElementById("adAvailible").innerHTML = "Availible " + storyTimeAvailible + ":00";
+            index = chosenStories.indexOf(stories[given].name);
+            if (index > -1) {
+                chosenStories.splice(index, 1);
+            }
+            displayBroadcast();
         }
         
         function warningFlash(id) {
