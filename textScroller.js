@@ -18,6 +18,7 @@ document.getElementById("dialogueBoxImage").style.width = window.innerWidth*0.89
 
 function textScroll(text) {
     currArrayPos = 0;
+    textArray = [];
     document.activeElement.blur(); //Kludged but stops "enter" during text from triggering buttons
     clipText(text);
     newScroll(textArray[currArrayPos]);
@@ -27,7 +28,7 @@ function textScroll(text) {
 function newScroll (text) {
     scrollCount = 0;
     scroll(text);
-    textLoop = setInterval(function() { scroll(text); }, 40);
+    textLoop = setInterval(function() { scroll(text); }, 5);
 }
 
 function scroll(text) {
@@ -42,6 +43,10 @@ function scroll(text) {
         }
         else if (phase == 0) {
             incrementPhase();
+        }
+        else if (phase == 3 || 4) { //Kludge af for demo, fix
+            currArrayPos += 1;
+            textDone = true;
         }
     }
 }

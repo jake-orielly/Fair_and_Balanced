@@ -83,13 +83,14 @@
 </style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
 <body>
+    <img id="transitionCard" src="art/placeholderTransition.png" style="position:absolute; margin-left:25%" alt="error loading image" hidden>
     <img src="art/logo.png" style="float:left; width: 64px; height:64px;" alt="error loading image">
     <p id="newsroomHeader"> Channel 5 Newsroom </p>
     <br>
     <ul class="tab">
         <li><a href="javascript:void(0)" class="tabLinks active" onclick="openTab(event, 'Board')">Board</a></li>
         <li><a href="javascript:void(0)" id="broadcastTab" class="tabLinks" onclick="openTab(event, 'Broadcast')">Broadcast</a></li>
-        <li><a href="javascript:void(0)" class="tabLinks" onclick="openTab(event, 'Anchors')">Anchors</a></li>
+        <li><a href="javascript:void(0)" id="anchorsTab" class="tabLinks" onclick="openTab(event, 'Anchors')">Anchors</a></li>
     </ul>
     
     <div id='Board' class = 'tabContent'>
@@ -169,12 +170,14 @@
         var chosenStories = [];
         
         var ad1 = {name:"Soca Cola", value:32000, image:"colaSoda.png", minutes:5};
-        var ad2 = {name:"Drugs", value:21000, image:"colaSoda.png", minutes:6};
+        var ad2 = {name:"Pharma", value:21000, image:"colaSoda.png", minutes:6};
         var ad3 = {name:"Guns", value:18000, image:"colaSoda.png",minutes:4};
         var ad4 = {name:"Cars", value:35000, image:"colaSoda.png",minutes:8};
         var ads = [ad1,ad2,ad3,ad4];
         
-        var module0Intro = ["This is the Channel 5 News Room! This is where you'll be making all the important decisions about how to run the network! The first thing we need to do is go over to the broadcast tab!"]
+        var socaStory = false;
+        
+        var module0Intro = ["This is the Channel 5 News Room! This is where you'll be making all the important decisions about how to run the network! The first thing we need to do is go over to the broadcast tab!", "First move the slider to choose how much time you want to allocate for commercials and how much you want to use for news. Too much news and we won't be able to pay the bills. Too much advertising and we won't be able to keep people watching. Don't worry too much, you can change it at the start of each week.","Now select which advertisers to schedule for the program. As our reputation grows, bigger advertisers will bid for space on our program.","Now you just have to select which stories to air and we'll be ready to broadcast! Once you're done, go to the \"Board\" tab and start the broadcast!","Some poor man was shot today. When these horrible things happen, we have a responsibility to get the information out to the public so they can stay safe. We call these \"Breaking News Stories\". These stories offer a one time oppurtunity to get some extra viewers and can be very important to the station. However, they do take longer than a normal story to cover.","Hello. I am Mr. Sullivan, the Board of Director's representative. We here at channel 5 are first and foremost an institute of journalism, but we also have a responsibility to our investors to remain profitable. Sometimes, we have to make sacrifices in the short term to ensure the station can keep running in the long term. To that end, one of our journalists has written a story about a Soca Cola \"scandal\". As they are one of our biggest advertisers, I personally called and asked them about the nature of this story and they assured me it was nothing but a misunderstanding, and requested that we wait to cover this story until we have all the facts. While you ultimately have creative control at the station, I hope you will use discretion in regards to this matter.","Because you decided to rush ahead and run that Soca Cola story they've decided to pull their advertising. I hope that in the future you will be more prudent in these matters. We sometimes have to make tough decisions in this business, and I worry about how your decision making will affect the future viability of this station.","I noticed you decided not to run the Soca Cola story. I appreciate your prudence in this matter and I know they do as well. We sometimes have to make tough decisions in this business, and I'm glad to know I can count on you to think things through rationally.","We received a very promising applicatoin for the position of anchor here, who I hope you will consider. Linda has been good to this company, but we have to make our decisions based on the company as a whole, not just based on individuals. This new anchor could bring a fresh face that would really help our image."];
         
         startTab();
         displayStats();
@@ -205,11 +208,34 @@
         }
         
         function incrementPhase() {
+            $("#dialogueBox").show();
             if (phase == 0)
                 setTimeout(function(){
                     document.getElementById("broadcastTab").style.backgroundColor = "gold";
                 },350);
-                
+            else if (phase == 1) {
+                document.getElementById("broadcastTab").style.backgroundColor = "#ccc";
+                textScroll(module0Intro[1]);
+            }
+            else if (phase == 2) {
+                textScroll(module0Intro[2]);
+            }
+            else if (phase == 3) {
+                textScroll(module0Intro[3]);
+            }
+            else if (phase == 4)
+                textScroll(module0Intro[4]);
+            else if (phase == 5) {
+                textScroll(module0Intro[5]);
+            }
+            else if (phase == 6) {
+                if (socaStory)
+                    textScroll(module0Intro[6]);
+                else
+                    textScroll(module0Intro[7]);
+            }
+            else if (phase == 7)
+                textScroll(module0Intro[8]);
             phase++;
         }
         
@@ -217,11 +243,7 @@
             $("#dialogueBox").show();
             textScroll(module0Intro[0]);
         }
-        
-        function textSegmentFinished() {
-            alert(1);
-        }
-        
+
         function displayStats() {
             var table = "<tr><td style='font-size:24px'>Money: " + numToDisplayNum(money,true) + "</td></tr>";
             table += "<tr><td style='font-size:24px'>Viewers: " + numToDisplayNum(viewers,false) + "</td></tr>";
@@ -236,6 +258,11 @@
                 textScroll("You're not ready to broadcast yet! Check the broadcast pannel!");
             }
             else {
+                $("#transitionCard").show();
+                setTimeout(function(){
+                    $("#transitionCard").hide();
+                    incrementPhase();
+                },1000);
                 money = money + adRevenue;
                 money = money-currentAnchor.salary;
                 money = money-expenses;
@@ -259,8 +286,9 @@
                     for (var i = 0; i < stories.length; i++)
                         newList.push(stories[i]);
                     stories = newList;
+                    document.getElementById("portrait").src ="art/exec.png";
                 }
-                else if (cycle == 2) {
+                else if (cycle == 3){
                     $("#heatherPic").show();
                     anchorList.push(heather);
                     displayAnchors();
@@ -291,6 +319,7 @@
                             if (index > -1) {
                                 ads.splice(index, 1);
                             }
+                            socaStory = true;
                         }
                             
                     }
@@ -330,6 +359,9 @@
             $(".storyPlanning").show();
             displayStories();
             displayBroadcast();
+            
+            if (phase == 3)
+                incrementPhase();
         }
         
         function storyBackPress() {
@@ -407,7 +439,7 @@
             var table = "";
             for (var i = 0; i < ads.length; i++) {
                 table += "<tr>";
-                table += "<td><img src='art/" + "colaSoda.png" + "' style='width:64px; height:32px; float:left' alt='error loading image'></td>";
+                table += "<td><img src='art/" + "placeholderLogo.png" + "' style='width:64px; height:32px; float:left' alt='error loading image'></td>";
                 table += "<td style='margin-top:8px'>" + ads[i].name + ": " + numToDisplayNum(ads[i].value,true) + " for " + ads[i].minutes + " minutes." + "</td>";
                 table += "<td><button id='adButton" + i + "' class='addButton' onclick='buyButtonClick(" + i + ")'>Add</button></td>"
                 table += "</tr>";
@@ -424,10 +456,15 @@
             tabLinks = document.getElementsByClassName("tabLinks");
             for (i = 0; i < tabLinks.length; i++) {
                 tabLinks[i].className = tabLinks[i].className.replace(" active", "");
+                tabLinks[i].style.backgroundColor = "#F1F1F1";
             }
 
             document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.style.backgroundColor = "#CCC";
             evt.currentTarget.className += " active";
+            
+            if (phase == 1 && tabName == "Broadcast")
+                incrementPhase();
         }    
         
         function buyButtonClick(given) {
@@ -448,8 +485,11 @@
         
         function addStoryClick(given) {
             var button = document.getElementById("addStory" + given);
-            if (storyTimeAvailible - 10 >= 0) {
-                storyTimeAvailible = storyTimeAvailible - 10;
+            var storyTime = 10;
+            if (stories[given].breaking)
+                storyTime = 15;
+            if (storyTimeAvailible - storyTime >= 0) {
+                storyTimeAvailible = storyTimeAvailible - storyTime;
                 button.className = "sellButton";
                 button.innerHTML = "Remove";
                 button.onclick = function(){removeStoryClick(given)};
@@ -464,11 +504,14 @@
         
         function removeStoryClick(given) {
             var button = document.getElementById("addStory" + given);
+            var storyTime = 10;
+            if (stories[given].breaking)
+                storyTime = 15;
             var index;
             button.className = "addButton";
             button.innerHTML = "Add";
             button.onclick = function(){addStoryClick(given)};
-            storyTimeAvailible = storyTimeAvailible + 10;
+            storyTimeAvailible = storyTimeAvailible + storyTime;
             document.getElementById("adAvailible").innerHTML = "Availible " + storyTimeAvailible + ":00";
             index = chosenStories.indexOf(stories[given]);
             if (index > -1) {
@@ -510,6 +553,8 @@
             $(".adTiming").hide();
             $(".adPlanning").show();
             updateAdAmounts();
+            if (phase == 2)
+                incrementPhase();
         }
         
         function adBack() {
