@@ -40,8 +40,9 @@ function scroll(text) {
             currArrayPos += 1;
             textDone = true;
         }
-        else if (phase == 0)
+        else if (phase == 0) {
             incrementPhase();
+        }
     }
 }
 

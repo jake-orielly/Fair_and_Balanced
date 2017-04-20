@@ -88,7 +88,7 @@
     <br>
     <ul class="tab">
         <li><a href="javascript:void(0)" class="tabLinks active" onclick="openTab(event, 'Board')">Board</a></li>
-        <li><a href="javascript:void(0)" class="tabLinks" onclick="openTab(event, 'Broadcast')">Broadcast</a></li>
+        <li><a href="javascript:void(0)" id="broadcastTab" class="tabLinks" onclick="openTab(event, 'Broadcast')">Broadcast</a></li>
         <li><a href="javascript:void(0)" class="tabLinks" onclick="openTab(event, 'Anchors')">Anchors</a></li>
     </ul>
     
@@ -139,11 +139,14 @@
         var anchorList = [linda];
         
         var money = 100000;
+        var expenses = 10000;
         var viewers = 4500;
         var reputation = 20;
+        var currentAnchor = linda;
         var reputationText = "You're running a small time trusted local news source."
         
         var readiness = 0;
+        var phase = 0;
         
         var adRevenue = 0;
         var adTimeAvailible;
@@ -165,16 +168,22 @@
         
         var chosenStories = [];
         
-        var ad1 = {name:"Soca Cola", value:15000, image:"colaSoda.png", minutes:5};
-        var ad2 = {name:"Pepsi", value:16000, image:"colaSoda.png", minutes:6};
-        var ad3 = {name:"Guns", value:14000, image:"colaSoda.png",minutes:4};
-        var ad4 = {name:"Cars", value:18000, image:"colaSoda.png",minutes:8};
+        var ad1 = {name:"Soca Cola", value:32000, image:"colaSoda.png", minutes:5};
+        var ad2 = {name:"Drugs", value:21000, image:"colaSoda.png", minutes:6};
+        var ad3 = {name:"Guns", value:18000, image:"colaSoda.png",minutes:4};
+        var ad4 = {name:"Cars", value:35000, image:"colaSoda.png",minutes:8};
         var ads = [ad1,ad2,ad3,ad4];
+        
+        var module0Intro = ["This is the Channel 5 News Room! This is where you'll be making all the important decisions about how to run the network! The first thing we need to do is go over to the broadcast tab!"]
         
         startTab();
         displayStats();
         displayAdvertising();
         displayAnchors();
+        setTimeout(function(){
+            introSpeech();
+        },100);
+        
         
         var sliderLoop = setInterval(function() { sliderUpdate();}, 30);
         
@@ -185,8 +194,32 @@
         }    
         
         function buttonPressed() {
-            if (getTextDone())
-                $("#dialogueBox").hide();
+            if (getTextDone()) {
+                if (getCurrArrayPos() == getTextArray().length)
+                    $("#dialogueBox").hide();
+                else {
+                    setTextDone(false);
+                    newScroll(getTextArray()[getCurrArrayPos()]);
+                }   
+            }
+        }
+        
+        function incrementPhase() {
+            if (phase == 0)
+                setTimeout(function(){
+                    document.getElementById("broadcastTab").style.backgroundColor = "gold";
+                },350);
+                
+            phase++;
+        }
+        
+        function introSpeech() {
+            $("#dialogueBox").show();
+            textScroll(module0Intro[0]);
+        }
+        
+        function textSegmentFinished() {
+            alert(1);
         }
         
         function displayStats() {
@@ -204,7 +237,8 @@
             }
             else {
                 money = money + adRevenue;
-                money = money-linda.salary;
+                money = money-currentAnchor.salary;
+                money = money-expenses;
                 readiness = 0;
                 adRevenue = 0;
                 evalStories();
@@ -249,8 +283,17 @@
                     if (effect == "views") {
                         viewers = parseInt(viewers) + parseInt(amount);
                     }
-                    if (chosenStories[i].breaking)
+                    if (chosenStories[i].breaking) {
                         toTell[toTell.length] = " People loved your coverage of the " + chosenStories[i].name.toLowerCase() + "!";
+                        if (chosenStories[i].name == "Soca Cola Scandal") {
+                            toTell[toTell.length] = " Soca Cola hated your coverage of the " + chosenStories[i].name.toLowerCase() + " and will no longer advertise with you. ";
+                            index = ads.indexOf(ad1);
+                            if (index > -1) {
+                                ads.splice(index, 1);
+                            }
+                        }
+                            
+                    }
                     else if (amount > 0)
                         toTell[toTell.length] = " People enjoyed your coverage of " + chosenStories[i].name.toLowerCase() + ".";
                     else 
