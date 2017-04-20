@@ -97,6 +97,7 @@
         <h1> Board </h1>
         <table id="statsTable">
         </table>
+        <table id="moneySheet"></table>
         <button style="font-size:24px; padding: 15px" onclick="endCycle()"> Begin Broadcast </button>
     </div>
     
@@ -119,8 +120,9 @@
     <div id='Anchors' class = 'tabContent'>
         <h1> Anchors </h1>
         <table style="float:left">
-            <tr><td><img src="art/anchor1.png" style="float:left; margin-top:10px" alt="error loading image"></td></tr>
-            <tr><td><img id="heatherPic" src="art/anchor2.png" style="float:left; margin-top:40px" alt="error loading image" hidden></td></tr>
+            <tr><td><img id="lindaPic" src="art/anchor1.png" style="float:left; margin-top:10px" alt="error loading image"></td></tr>
+            <button id="lindaFire" class="sellButtonTemp" onclick="fireAnchor()" hidden> Fire </button>
+            <tr><td><img id="heatherPic" onclick="hireAnchor()" src="art/anchor2.png" style="float:left; margin-top:40px" alt="error loading image" hidden></td></tr>
         </table>
         <table id="anchorTable" style="float:left">
         </table>
@@ -133,6 +135,11 @@
     </div>
     
     <script>
+        var module0Text = ["This is the Channel 5 News Room! This is where you'll be making all the important decisions about how to run the network! The first thing we need to do is go over to the broadcast tab!", "First move the slider to choose how much time you want to allocate for commercials and how much you want to use for news. Too much news and we won't be able to pay the bills. Too much advertising and we won't be able to keep people watching. Don't worry too much, you can change it at the start of each week.","Now select which advertisers to schedule for the program. As our reputation grows, bigger advertisers will bid for space on our program.","Now you just have to select which stories to air and we'll be ready to broadcast! Once you're done, go to the \"Board\" tab and start the broadcast!","Some poor man was shot today. When these horrible things happen, we have a responsibility to get the information out to the public so they can stay safe. We call these \"Breaking News Stories\". These stories offer a one time oppurtunity to get some extra viewers and can be very important to the station. However, they do take longer than a normal story to cover.","Hello. I am Mr. Sullivan, the Board of Director's representative. We here at channel 5 are first and foremost an institute of journalism, but we also have a responsibility to our investors to remain profitable. Sometimes, we have to make sacrifices in the short term to ensure the station can keep running in the long term. To that end, one of our journalists has written a story about a Soca Cola \"scandal\". As they are one of our biggest advertisers, I personally called and asked them about the nature of this story and they assured me it was nothing but a misunderstanding, and requested that we wait to cover this story until we have all the facts. While you ultimately have creative control at the station, I hope you will use discretion in regards to this matter.","Because you decided to rush ahead and run that Soca Cola story they've decided to pull their advertising. I hope that in the future you will be more prudent in these matters. We sometimes have to make tough decisions in this business, and I worry about how your decision making will affect the future viability of this station.","I noticed you decided not to run the Soca Cola story. I appreciate your prudence in this matter and I know they do as well. We sometimes have to make tough decisions in this business, and I'm glad to know I can count on you to think things through rationally.","We received a very promising applicatoin for the position of anchor here, who I hope you will consider. Linda has been good to this company, but we have to make our decisions based on the company as a whole, not just based on individuals. This new anchor could bring a fresh face that would really help our image.","Unfortunately we can not have 2 anchors at this time."];
+
+    </script>
+    
+    <script>
         //Note: party colors #009933 & #ff6600
         var linda = {name:"Linda",age:47, salary: 36500, tagline: "Loyal, experienced, and will always remember your birthday.", experience:5,attractiveness:3};
         var heather = {name:"Heather",age:25, salary: 42000, tagline: "Just getting started in the industry, but has a face for showbiz.", experience:2,attractiveness:8};
@@ -140,7 +147,7 @@
         var anchorList = [linda];
         
         var money = 100000;
-        var expenses = 10000;
+        var expenses = 30000;
         var viewers = 4500;
         var reputation = 20;
         var currentAnchor = linda;
@@ -169,15 +176,13 @@
         
         var chosenStories = [];
         
-        var ad1 = {name:"Soca Cola", value:32000, image:"colaSoda.png", minutes:5};
-        var ad2 = {name:"Pharma", value:21000, image:"colaSoda.png", minutes:6};
-        var ad3 = {name:"Guns", value:18000, image:"colaSoda.png",minutes:4};
+        var ad1 = {name:"Soca Cola", value:40000, image:"colaSoda.png", minutes:5};
+        var ad2 = {name:"Pharma", value:20000, image:"colaSoda.png", minutes:6};
+        var ad3 = {name:"Guns", value:15000, image:"colaSoda.png",minutes:4};
         var ad4 = {name:"Cars", value:35000, image:"colaSoda.png",minutes:8};
         var ads = [ad1,ad2,ad3,ad4];
         
         var socaStory = false;
-        
-        var module0Intro = ["This is the Channel 5 News Room! This is where you'll be making all the important decisions about how to run the network! The first thing we need to do is go over to the broadcast tab!", "First move the slider to choose how much time you want to allocate for commercials and how much you want to use for news. Too much news and we won't be able to pay the bills. Too much advertising and we won't be able to keep people watching. Don't worry too much, you can change it at the start of each week.","Now select which advertisers to schedule for the program. As our reputation grows, bigger advertisers will bid for space on our program.","Now you just have to select which stories to air and we'll be ready to broadcast! Once you're done, go to the \"Board\" tab and start the broadcast!","Some poor man was shot today. When these horrible things happen, we have a responsibility to get the information out to the public so they can stay safe. We call these \"Breaking News Stories\". These stories offer a one time oppurtunity to get some extra viewers and can be very important to the station. However, they do take longer than a normal story to cover.","Hello. I am Mr. Sullivan, the Board of Director's representative. We here at channel 5 are first and foremost an institute of journalism, but we also have a responsibility to our investors to remain profitable. Sometimes, we have to make sacrifices in the short term to ensure the station can keep running in the long term. To that end, one of our journalists has written a story about a Soca Cola \"scandal\". As they are one of our biggest advertisers, I personally called and asked them about the nature of this story and they assured me it was nothing but a misunderstanding, and requested that we wait to cover this story until we have all the facts. While you ultimately have creative control at the station, I hope you will use discretion in regards to this matter.","Because you decided to rush ahead and run that Soca Cola story they've decided to pull their advertising. I hope that in the future you will be more prudent in these matters. We sometimes have to make tough decisions in this business, and I worry about how your decision making will affect the future viability of this station.","I noticed you decided not to run the Soca Cola story. I appreciate your prudence in this matter and I know they do as well. We sometimes have to make tough decisions in this business, and I'm glad to know I can count on you to think things through rationally.","We received a very promising applicatoin for the position of anchor here, who I hope you will consider. Linda has been good to this company, but we have to make our decisions based on the company as a whole, not just based on individuals. This new anchor could bring a fresh face that would really help our image."];
         
         startTab();
         displayStats();
@@ -215,41 +220,70 @@
                 },350);
             else if (phase == 1) {
                 document.getElementById("broadcastTab").style.backgroundColor = "#ccc";
-                textScroll(module0Intro[1]);
+                textScroll(module0Text[1]);
             }
             else if (phase == 2) {
-                textScroll(module0Intro[2]);
+                textScroll(module0Text[2]);
             }
             else if (phase == 3) {
-                textScroll(module0Intro[3]);
+                textScroll(module0Text[3]);
             }
             else if (phase == 4)
-                textScroll(module0Intro[4]);
+                textScroll(module0Text[4]);
             else if (phase == 5) {
-                textScroll(module0Intro[5]);
+                textScroll(module0Text[5]);
             }
             else if (phase == 6) {
                 if (socaStory)
-                    textScroll(module0Intro[6]);
+                    textScroll(module0Text[6]);
                 else
-                    textScroll(module0Intro[7]);
+                    textScroll(module0Text[7]);
             }
             else if (phase == 7)
-                textScroll(module0Intro[8]);
+                textScroll(module0Text[8]);
             phase++;
         }
         
         function introSpeech() {
             $("#dialogueBox").show();
-            textScroll(module0Intro[0]);
+            textScroll(module0Text[0]);
         }
 
+        function hireAnchor() {
+            if (currentAnchor != null)
+                alert(module0Text[9]);
+            else {
+                currentAnchor = heather;
+                $("#heatherHire").hide();
+            }
+        }
+        
+        function fireAnchor() {
+            $("#lindaPic").hide();
+            $("#lindaFire").hide();
+            index = anchorList.indexOf(linda);
+            if (index > -1) {
+                anchorList.splice(index, 1);
+            }
+            displayAnchors();
+            currentAnchor = null;
+        }
+        
         function displayStats() {
             var table = "<tr><td style='font-size:24px'>Money: " + numToDisplayNum(money,true) + "</td></tr>";
             table += "<tr><td style='font-size:24px'>Viewers: " + numToDisplayNum(viewers,false) + "</td></tr>";
             table += "<tr><td style='font-size:24px'>Reputation: " + reputation + "</td></tr>";
             table += "<tr><td style='font-size:24px; font-style:italic'>" + reputationText + "</td></tr>";
             document.getElementById("statsTable").innerHTML = table;
+        }
+        
+        function displayMoneySheet() {
+            var total = adRevenue - currentAnchor.salary - expenses;
+            var table = "<tr><td style='font-size:24px'>Salary Paid: " + numToDisplayNum(currentAnchor.salary,true) + "</td></tr>";
+            table += "<tr><td style='font-size:24px'>Expenses: " + numToDisplayNum(expenses,true) + "</td></tr>";
+            table += "<tr><td style='font-size:24px'>Ad Revenue: " + numToDisplayNum(adRevenue,true) + "</td></tr>";
+            table += "<tr><td style='font-size:24px'>Net Total: " + numToDisplayNum(total,true) + "</td></tr>";
+            document.getElementById("moneySheet").innerHTML = table;
         }
         
         function endCycle() {
@@ -266,6 +300,9 @@
                 money = money + adRevenue;
                 money = money-currentAnchor.salary;
                 money = money-expenses;
+                if (money < 0)
+                    window.location.replace("gameOver.html");
+                displayMoneySheet();
                 readiness = 0;
                 adRevenue = 0;
                 evalStories();
@@ -290,6 +327,8 @@
                 }
                 else if (cycle == 3){
                     $("#heatherPic").show();
+                    $("#heatherHire").show();
+                    $("#lindaFire").show();
                     anchorList.push(heather);
                     displayAnchors();
                 }
@@ -419,7 +458,10 @@
             var table = "";
             
             for (var i = 0; i < anchorList.length; i++) {
-                table += "<tr><td style='font-size:24px'><u><b>" + anchorList[i].name + ", " + anchorList[i].age + "</b></u></td></tr>";
+                if (anchorList[i].name == "Linda")
+                    table += "<tr><td style='font-size:24px'><u><b>" + anchorList[i].name + ", " + anchorList[i].age + "</b></u></td></tr>";
+                else 
+                    table += "<tr><td style='font-size:24px'><u><b>" + anchorList[i].name + ", " + anchorList[i].age + "</b></u></td><td><button id='heatherHire' class='addButtonTemp' onclick='hireAnchor()'> Hire </button></td></tr>";
                 table += "<tr><td>Salary: " + numToDisplayNum(anchorList[i].salary,true) + "</td></tr>";
                 table += "<tr><td>Experience: </td><td>";
                 for (var j = 0; j < anchorList[i].experience; j++)
@@ -430,6 +472,7 @@
                     table += "<div class='statBar' style='background:#ff3300'></div>";
                 table += "</td></tr>";
                 table += "<tr><td><i>" + anchorList[i].tagline + "</i></td></tr>";
+                table += "<tr></tr>";
             }
             
             document.getElementById("anchorTable").innerHTML = table;
@@ -614,6 +657,6 @@
         
     </script>
     
-    <script src="contractText.js"></script>
+    <script src="texts.js"></script>
 </body>
 </html>

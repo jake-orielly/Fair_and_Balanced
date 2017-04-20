@@ -28,7 +28,7 @@ function textScroll(text) {
 function newScroll (text) {
     scrollCount = 0;
     scroll(text);
-    textLoop = setInterval(function() { scroll(text); }, 5);
+    textLoop = setInterval(function() { scroll(text); }, 30);
 }
 
 function scroll(text) {
