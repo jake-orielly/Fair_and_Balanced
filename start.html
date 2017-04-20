@@ -41,14 +41,14 @@
     </select>
     <input type="text" id="firstName" class="form" value="John">
     <input type="text" id="lastName" class="form" value="Smith">
-    <button class="form" onclick="submit()">Submit</button>
+    <button class="form" onclick="submit()">Sign</button>
     
     <div id="dialogueBox" class="contract" hidden>
         <img id="portrait" src="art/anchor1.png" alt="error loading image">
         
         <img id="dialogueBoxImage" src="art/dialogueBox.png" alt="error loading image" style="width:304px;height:138px;">
       
-        <p class = "scrollText" id="demo"></p>
+        <p class = "scrollText" id="textScroll"></p>
     </div>
     
     <script>
@@ -59,10 +59,9 @@
         
         document.onkeypress = function (e) {
             e = e || window.event;
-            if(e.keyCode == 32)
+            if(e.keyCode == 13 || e.keyCode == 32) {  
                 e.preventDefault();
-            if(e.keyCode == 13 || e.keyCode == 32)
-                buttonPressed();
+            }
         };
         
         function buttonPressed() {

@@ -7,16 +7,18 @@ var maxChar = 64; //maximum number of characters that can fit in the dialogue bo
 
 document.onkeypress = function (e) {
     e = e || window.event;
-    if(e.keyCode == 32)
+        
+    if(e.keyCode == 13 || e.keyCode == 32) {
         e.preventDefault();
-    if(e.keyCode == 13 || e.keyCode == 32)
         buttonPressed();
+    }
 };
 
 document.getElementById("dialogueBoxImage").style.width = window.innerWidth*0.89 + "px";
 
 function textScroll(text) {
     currArrayPos = 0;
+    document.activeElement.blur(); //Kludged but stops "enter" during text from triggering buttons
     clipText(text);
     newScroll(textArray[currArrayPos]);
     textDone = false;
@@ -30,16 +32,16 @@ function newScroll (text) {
 
 function scroll(text) {
     scrollCount++;
-    document.getElementById("demo").innerHTML = text.substr(0,scrollCount);
+    
+    document.getElementById("textScroll").innerHTML = text.substr(0,scrollCount);
     if (scrollCount == text.length) {
         clearInterval(textLoop);
-        if (currArrayPos < textArray.length-1) {
+        if (currArrayPos < textArray.length-1 || textArray.length == 1) {
             currArrayPos += 1;
             textDone = true;
         }
-        else if (phase == 0){
+        else if (phase == 0)
             incrementPhase();
-        }
     }
 }
 
