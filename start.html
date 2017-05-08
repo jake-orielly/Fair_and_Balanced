@@ -46,16 +46,18 @@
     <div id="dialogueBox" class="contract" hidden>
         <img id="portrait" src="art/anchor1.png" alt="error loading image">
         
-        <img id="dialogueBoxImage" src="art/dialogueBox.png" alt="error loading image" style="width:304px;height:138px;">
+        <img id="dialogueBoxImage" src="art/dialogueBox.png" alt="error loading image">
       
         <p class = "scrollText" id="textScroll"></p>
     </div>
     
     <script>
         var text = ["Congratulations on being hired", "! Director of Programming is a very important position! My name is Linda, I'm the anchor here, I'll be showing you around! Let's get started!"];
-        var maxChar = 64; //maximum number of characters that can fit in the dialogue box
         var submitted = false;
         var phase = 0;
+        
+        document.getElementById("dialogueBoxImage").style.width = window.innerWidth*0.89 + "px";
+        document.getElementById("dialogueBoxImage").style.height = window.innerHeight*0.33 + "px";
         
         document.onkeypress = function (e) {
             e = e || window.event;

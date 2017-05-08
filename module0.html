@@ -146,10 +146,11 @@
         
         var anchorList = [linda];
         
-        var money = 100000;
+        var money = 30000;
         var expenses = 30000;
         var viewers = 4500;
         var reputation = 20;
+        var endMoney;
         var currentAnchor = linda;
         var reputationText = "You're running a small time trusted local news source."
         
@@ -176,11 +177,13 @@
         
         var chosenStories = [];
         
-        var ad1 = {name:"Soca Cola", value:40000, image:"colaSoda.png", minutes:5};
-        var ad2 = {name:"Pharma", value:20000, image:"colaSoda.png", minutes:6};
-        var ad3 = {name:"Guns", value:15000, image:"colaSoda.png",minutes:4};
-        var ad4 = {name:"Cars", value:35000, image:"colaSoda.png",minutes:8};
+        var ad1 = {name:"Soca Cola", value:35000, image:"colaSoda.png", minutes:5};
+        var ad2 = {name:"Pharma", value:15000, image:"colaSoda.png", minutes:6};
+        var ad3 = {name:"Guns", value:10000, image:"colaSoda.png",minutes:4};
+        var ad4 = {name:"Cars", value:30000, image:"colaSoda.png",minutes:8};
         var ads = [ad1,ad2,ad3,ad4];
+        
+        var storyTimeAvailible
         
         var socaStory = false;
         
@@ -194,6 +197,9 @@
         
         
         var sliderLoop = setInterval(function() { sliderUpdate();}, 30);
+        
+        document.getElementById("dialogueBoxImage").style.width = window.innerWidth*0.89 + "px";
+        document.getElementById("dialogueBoxImage").style.height = window.innerHeight*0.33 + "px";
         
         function startTab() {
             var tabLinks = document.getElementsByClassName("tabLinks");
@@ -213,7 +219,7 @@
         }
         
         function incrementPhase() {
-            $("#dialogueBox").show();
+            //$("#dialogueBox").show();
             if (phase == 0)
                 setTimeout(function(){
                     document.getElementById("broadcastTab").style.backgroundColor = "gold";
@@ -245,7 +251,7 @@
         }
         
         function introSpeech() {
-            $("#dialogueBox").show();
+            //$("#dialogueBox").show();
             textScroll(module0Text[0]);
         }
 
@@ -270,7 +276,7 @@
         }
         
         function displayStats() {
-            var table = "<tr><td style='font-size:24px'>Money: " + numToDisplayNum(money,true) + "</td></tr>";
+            var table = "<tr><td style='font-size:24px' id='moneyDisplay'>Money: " + numToDisplayNum(money,true) + "</td></tr>";
             table += "<tr><td style='font-size:24px'>Viewers: " + numToDisplayNum(viewers,false) + "</td></tr>";
             table += "<tr><td style='font-size:24px'>Reputation: " + reputation + "</td></tr>";
             table += "<tr><td style='font-size:24px; font-style:italic'>" + reputationText + "</td></tr>";
@@ -286,9 +292,19 @@
             document.getElementById("moneySheet").innerHTML = table;
         }
         
+        function moneyAnimation() {
+            if (money > endMoney)
+                money -= 100;
+            else if (money < endMoney)
+                money += 100;
+            else
+                clearInterval(moneyLoop);
+            document.getElementById("moneyDisplay").innerHTML = "Money: " + numToDisplayNum(money,true);
+        }
+        
         function endCycle() {
             if (readiness == 0 || chosenStories[0] == null) {
-                $("#dialogueBox").show();
+                //$("#dialogueBox").show();
                 textScroll("You're not ready to broadcast yet! Check the broadcast pannel!");
             }
             else {
@@ -297,11 +313,23 @@
                     $("#transitionCard").hide();
                     incrementPhase();
                 },1000);
-                money = money + adRevenue;
-                money = money-currentAnchor.salary;
-                money = money-expenses;
-                if (money < 0)
+                
+                endMoney = money + adRevenue - currentAnchor.salary - expenses;
+                
+                var animateMoney = setInterval(function() {
+                    if (money != endMoney)
+                        moneyAnimation();
+                    else 
+                        clearInterval(animateMoney);
+                    alert(1);
+                },10);
+                
+                if (money < 0) {
+                    localStorage.setItem('finalAdRevenue', adRevenue);
+                    localStorage.setItem('finalSalary', currentAnchor.salary);
+                    localStorage.setItem('finalExpenses', expenses);
                     window.location.replace("gameOver.html");
+                }
                 displayMoneySheet();
                 readiness = 0;
                 adRevenue = 0;
@@ -385,12 +413,11 @@
         
         function toStoryMode() {
             var sliderValue = document.getElementById("adRange").value;
-            var timeAvailible = 60-parseInt(sliderValue);
+            storyTimeAvailible = 60-parseInt(sliderValue);
             readiness++;
             chosenStories = [];
-            document.getElementById("adAvailible").innerHTML = "Availible " + timeAvailible + ":00";
-            document.getElementById("adTotal").innerHTML = "Total: " + timeAvailible + ":00";
-            storyTimeAvailible = 60 - adTimeAvailible;
+            document.getElementById("adAvailible").innerHTML = "Availible " + storyTimeAvailible + ":00";
+            document.getElementById("adTotal").innerHTML = "Total: " + storyTimeAvailible + ":00";
             document.getElementById("backButton").onclick = function() {storyBackPress()};
             document.getElementById("broadcastHeader").innerHTML = "News Items";
             $("#adRevenue").hide();
@@ -528,9 +555,9 @@
         
         function addStoryClick(given) {
             var button = document.getElementById("addStory" + given);
-            var storyTime = 10;
+            var storyTime = 15;
             if (stories[given].breaking)
-                storyTime = 15;
+                storyTime = 20;
             if (storyTimeAvailible - storyTime >= 0) {
                 storyTimeAvailible = storyTimeAvailible - storyTime;
                 button.className = "sellButton";
@@ -547,9 +574,9 @@
         
         function removeStoryClick(given) {
             var button = document.getElementById("addStory" + given);
-            var storyTime = 10;
+            var storyTime = 15;
             if (stories[given].breaking)
-                storyTime = 15;
+                storyTime = 20;
             var index;
             button.className = "addButton";
             button.innerHTML = "Add";

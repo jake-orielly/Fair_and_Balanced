@@ -8,8 +8,16 @@
 </style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
 <body>
-    <h1> Game Over! </h1>
-    <h2> You went bankrupt! </h2>
-    <p> This is a placeholder. </p>
+    <h1> You went bankrupt! </h1>
+    <table id="endDisplay"></table>
+    <script>
+        var endTable = "<table>";
+        endTable += "<tr><td>Ad Revenue: " + localStorage.getItem('finalAdRevenue') + "</td></tr>";
+        endTable += "<tr><td>Salary Paid: " + localStorage.getItem('finalSalary') + "</td></tr>";
+        endTable += "<tr><td>Expenses: " + localStorage.getItem('finalExpenses') + "</td></tr>";
+        endTable += "<tr><td>Total: " + (localStorage.getItem('finalAdRevenue') - localStorage.getItem('finalSalary') - localStorage.getItem('finalExpenses')) + "</td></tr>";
+        endTable += "<table>";
+        document.getElementById("endDisplay").innerHTML = endTable;
+    </script>
 </body>
 </html>

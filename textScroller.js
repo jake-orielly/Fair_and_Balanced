@@ -3,7 +3,7 @@ var textArray = [];
 var textDone;
 var scrollCount;
 var textLoop;
-var maxChar = 64; //maximum number of characters that can fit in the dialogue box
+var maxChar = 104;
 
 document.onkeypress = function (e) {
     e = e || window.event;
@@ -13,8 +13,6 @@ document.onkeypress = function (e) {
         buttonPressed();
     }
 };
-
-document.getElementById("dialogueBoxImage").style.width = window.innerWidth*0.89 + "px";
 
 function textScroll(text) {
     currArrayPos = 0;
@@ -33,8 +31,8 @@ function newScroll (text) {
 
 function scroll(text) {
     scrollCount++;
-    
     document.getElementById("textScroll").innerHTML = text.substr(0,scrollCount);
+    
     if (scrollCount == text.length) {
         clearInterval(textLoop);
         if (currArrayPos < textArray.length-1 || textArray.length == 1) {
