@@ -102,19 +102,24 @@
     </div>
     
     <div id='Broadcast' class = 'tabContent'>
-        <table class="storyPlanning" id="storyTable" style="float: right; display:inline; text-align:right" hidden><th><h1 class="storyPlanning" hidden>Broadcast </h1></th></table>
-        <h1 id="broadcastHeader"> Advertising </h1>
+        <table class="storyPlanning" id="broadcastTable" style="float: right; position: absolute; right: 10%;" hidden ><th><h1 class="storyPlanning" hidden>Broadcast </h1></th></table>
+        <h1 class="storyPlanning" id="storyHeader" hidden> Choose Stories </h1>
+        <p class="storyPlanning" id="storyAvailible" hidden> ERROR </p>
+        <p class="storyPlanning" id="storyTotal" hidden> ERROR </p>
+        <table class="storyPlanning" id="storyTable2" style="margin-top:15px" hidden>
+        </table>
+        <h1 class="adPlanning" hidden> Choose Advertising </h1>
+        <p class="adPlanning" id="adAvailible" hidden> ERROR </p>
+        <p class="adPlanning" id="adTotal" hidden> ERROR </p>
+        <p class="adPlanning" id="adRevenue" hidden> Total Revenue: $0 </p>
+        <button class="adPlanning" id="adChosenConfirm" onclick="adConfirmPress()" hidden> Confirm </button>
+        <table class="adPlanning" id="advertisingTable" style="margin-top:15px" hidden>
+        </table>
+        <h1> Allot Time </h1>
         <input id="adRange" class="adTiming" type="range" min = "5" max="25">
         <p id="adValue" class="adTiming"> ERROR </p>
         <p id="newsValue" class="adTiming"> ERROR </p>
         <button class="adTiming" onclick="adTimingConfirm()"> Confirm </button>
-        <p class="adPlanning" id="adAvailible" hidden> ERROR </p>
-        <p class="adPlanning" id="adTotal" hidden> ERROR </p>
-        <button class="adPlanning" id="adChosenConfirm" onclick="toStoryMode()" hidden> Confirm </button>
-        <button class="adPlanning" id="backButton" onclick="adBack()" hidden> Back </button>
-        <p class="adPlanning" id="adRevenue" hidden> Total Revenue: $0 </p>
-        <table class="adPlanning" id="advertisingTable" style="margin-top:15px" hidden>
-        </table>
     </div>
     
     <div id='Anchors' class = 'tabContent'>
@@ -148,13 +153,12 @@
         
         var money = 30000;
         var expenses = 30000;
-        var viewers = 4500;
+        var viewers = 45000;
         var reputation = 20;
         var endMoney;
         var currentAnchor = linda;
         var reputationText = "You're running a small time trusted local news source."
         
-        var readiness = 0;
         var phase = 0;
         
         var adRevenue = 0;
@@ -164,11 +168,11 @@
         
         var cycle = 0;
         
-        var story0 = {name:"Local Politics", effect:"rep -2", breaking:false};
-        var story1 = {name:"National Politics", effect:"rep 5", breaking:false};
-        var story2 = {name:"Global Politics", effect:"none", breaking:false};
-        var story3 = {name:"Local Crime", effect:"none", breaking:false};
-        var story4 = {name:"Celebrity News", effect:"none", breaking:false};
+        var story0 = {name:"Local Politics", effect:"rep -3", breaking:false};
+        var story1 = {name:"National Politics", effect:"rep 3", breaking:false};
+        var story2 = {name:"Global Politics", effect:"views -3", breaking:false};
+        var story3 = {name:"Local Crime", effect:"views 3", breaking:false};
+        var story4 = {name:"Celebrity News", effect:"views 3;rep -3", breaking:false};
         
         var breakingNews1 = {name:"Local Shooting", effect:"views 1000", breaking:true};
         var breakingNews2 = {name:"Soca Cola Scandal", effect:"views 600", breaking:true};
@@ -194,7 +198,6 @@
         setTimeout(function(){
             introSpeech();
         },100);
-        
         
         var sliderLoop = setInterval(function() { sliderUpdate();}, 30);
         
@@ -228,16 +231,8 @@
                 document.getElementById("broadcastTab").style.backgroundColor = "#ccc";
                 textScroll(module0Text[1]);
             }
-            else if (phase == 2) {
-                textScroll(module0Text[2]);
-            }
-            else if (phase == 3) {
-                textScroll(module0Text[3]);
-            }
-            else if (phase == 4)
-                textScroll(module0Text[4]);
-            else if (phase == 5) {
-                textScroll(module0Text[5]);
+            else if (phase >= 2 && phase <= 5) {
+                textScroll(module0Text[phase]);
             }
             else if (phase == 6) {
                 if (socaStory)
@@ -248,6 +243,13 @@
             else if (phase == 7)
                 textScroll(module0Text[8]);
             phase++;
+        }
+        
+        function adConfirmPress() {
+            $(".storyPlanning").show();
+            document.getElementById("storyAvailible").style = "display:inline; margin-right:30px";
+            document.getElementById("storyTotal").style = "display:inline";
+            toStoryMode();
         }
         
         function introSpeech() {
@@ -303,7 +305,7 @@
         }
         
         function endCycle() {
-            if (readiness == 0 || chosenStories[0] == null) {
+            if (chosenStories[0] == null) {
                 //$("#dialogueBox").show();
                 textScroll("You're not ready to broadcast yet! Check the broadcast pannel!");
             }
@@ -321,7 +323,6 @@
                         moneyAnimation();
                     else 
                         clearInterval(animateMoney);
-                    alert(1);
                 },10);
                 
                 if (money < 0) {
@@ -331,10 +332,10 @@
                     window.location.replace("gameOver.html");
                 }
                 displayMoneySheet();
-                readiness = 0;
                 adRevenue = 0;
                 evalStories();
-                reputationText = "";
+                if (toTell.length > 0)
+                    reputationText = "";
                 for (var i = 0; i < toTell.length; i++)
                     reputationText += toTell[i]; 
                 resetUI();
@@ -366,19 +367,26 @@
         
         function evalStories() {
             toTell = [];
-            var effect;
+            var effects;
             var amount;
+            var currEffect;
+
             for (var i = 0; i < chosenStories.length; i++) {
                 if (chosenStories[i].effect != "none") {
-                    effect = chosenStories[i].effect.split(" ")[0];
-                    amount = parseInt(chosenStories[i].effect.split(" ")[1]);
-                    if (effect == "rep") {
-                        reputation = parseInt(reputation) + parseInt(amount);
+                    effects = chosenStories[i].effect.split(";");
+                    for (var j = 0; j < effects.length; j++) {
+                        currEffect = effects[j].split(" ")[0];
+                        amount = parseInt(effects[j].split(" ")[1]);
+                        if (currEffect == "rep") {
+                            reputation = parseInt(reputation) + amount;
+                        }
+                        if (currEffect == "views") {
+                            viewers = parseInt(viewers) + amount * 1500;
+                        }
                     }
-                    if (effect == "views") {
-                        viewers = parseInt(viewers) + parseInt(amount);
-                    }
-                    if (chosenStories[i].breaking) {
+                }
+                
+                if (chosenStories[i].breaking) {
                         toTell[toTell.length] = " People loved your coverage of the " + chosenStories[i].name.toLowerCase() + "!";
                         if (chosenStories[i].name == "Soca Cola Scandal") {
                             toTell[toTell.length] = " Soca Cola hated your coverage of the " + chosenStories[i].name.toLowerCase() + " and will no longer advertise with you. ";
@@ -388,14 +396,6 @@
                             }
                             socaStory = true;
                         }
-                            
-                    }
-                    else if (amount > 0)
-                        toTell[toTell.length] = " People enjoyed your coverage of " + chosenStories[i].name.toLowerCase() + ".";
-                    else 
-                        toTell[toTell.length] = " People were bored by your coverage of " + chosenStories[i].name.toLowerCase() + ".";
-                    
-                    
                 }
             }
             chosenStories = [];
@@ -407,22 +407,17 @@
             $(".storyPlanning").hide();
             $(".adPlanning").hide();
             $(".adTiming").show();
-            document.getElementById("broadcastHeader").innerHTML = "Advertising";
             displayAdvertising();
         }
         
         function toStoryMode() {
             var sliderValue = document.getElementById("adRange").value;
             storyTimeAvailible = 60-parseInt(sliderValue);
-            readiness++;
             chosenStories = [];
-            document.getElementById("adAvailible").innerHTML = "Availible " + storyTimeAvailible + ":00";
-            document.getElementById("adTotal").innerHTML = "Total: " + storyTimeAvailible + ":00";
-            document.getElementById("backButton").onclick = function() {storyBackPress()};
-            document.getElementById("broadcastHeader").innerHTML = "News Items";
-            $("#adRevenue").hide();
-            $("#adChosenConfirm").hide();
-            $(".storyPlanning").show();
+            document.getElementById("storyAvailible").innerHTML = "Availible " + storyTimeAvailible + ":00";
+            document.getElementById("storyTotal").innerHTML = "Total: " + storyTimeAvailible + ":00";
+            //$("#adRevenue").hide();
+            //$("#adChosenConfirm").hide();
             displayStories();
             displayBroadcast();
             
@@ -430,31 +425,51 @@
                 incrementPhase();
         }
         
-        function storyBackPress() {
-            readiness--;
-            $(".adPlanning").show();
-            $(".storyPlanning").hide();
-            document.getElementById("broadcastHeader").innerHTML = "Advertising";
-            adRevenue = 0;
-            document.getElementById("backButton").onclick = function() {adBack()};
-            updateAdAmounts();
-            displayAdvertising();
-        }
-        
         function displayStories() {
             var storyStyle = "";
+            var effects = [];
             table = "";
             for (var i = 0; i < stories.length; i++) {
+                effects = assignEffectImage(stories[i].effect);
+                
                 if (!stories[i].breaking)
                     storyStyle = "";
                 else 
                     storyStyle = "background:#FF251B; color:#FFFFFF";
                 table += "<tr>";
+                table += "<td><button id='addStory" + i + "' class='addButton' onclick='addStoryClick(" + i + ")'>Add</button></td>";
                 table += "<td style='font-size:28px;" + storyStyle + "'>" + stories[i].name + "</td>";
-                table += "<td><button id='addStory" + i + "' class='addButton' onclick='addStoryClick(" + i + ")'>Add</button></td>"
+                
+                for (var j = 0; j < effects.length; j++) {
+                    table += "<td><img src='art/" + effects[j] + "' style='width:32px; height:32px; float:left' alt='error loading image'></td>";
+                }
                 table += "</tr>";
             }
-            document.getElementById("advertisingTable").innerHTML = table;
+            document.getElementById("storyTable2").innerHTML = table;
+        }
+        
+        function assignEffectImage(given) {
+            var givenEffects = given.split(";");
+            var currEffect;
+            var result = [];
+
+            for (var i = 0; i < givenEffects.length; i++){
+                currEffect = givenEffects[i].split(" ");
+                if (currEffect[0] == "rep") {
+                    if (currEffect[1] > 0)
+                        result.push("repUp.png");
+                    else 
+                        result.push("repDown.png");
+                }
+
+                else if (currEffect[0] == "views") {
+                    if (currEffect[1] > 0)
+                        result.push("viewsUp.png");
+                    else 
+                        result.push("viewsDown.png");
+                }
+            }
+            return result;
         }
         
         function displayBroadcast() {
@@ -471,7 +486,7 @@
                     table += "<td><button onclick=storyUp(" + i + ")>^</button></td>";
                 table += "<td style='" + storyStyle + "'>" + chosenStories[i].name + "</td></tr>";
             }
-            document.getElementById("storyTable").innerHTML = table;
+            document.getElementById("broadcastTable").innerHTML = table;
         }
         
         function storyUp(given) {
@@ -509,9 +524,8 @@
             var table = "";
             for (var i = 0; i < ads.length; i++) {
                 table += "<tr>";
-                table += "<td><img src='art/" + "placeholderLogo.png" + "' style='width:64px; height:32px; float:left' alt='error loading image'></td>";
-                table += "<td style='margin-top:8px'>" + ads[i].name + ": " + numToDisplayNum(ads[i].value,true) + " for " + ads[i].minutes + " minutes." + "</td>";
                 table += "<td><button id='adButton" + i + "' class='addButton' onclick='buyButtonClick(" + i + ")'>Add</button></td>"
+                table += "<td style='margin-top:8px'>" + ads[i].name + ": " + numToDisplayNum(ads[i].value,true) + " for " + ads[i].minutes + " minutes." + "</td>";
                 table += "</tr>";
             }
             document.getElementById("advertisingTable").innerHTML = table;
@@ -619,24 +633,22 @@
         }
         
         function adTimingConfirm() {
-            readiness++;
-            $(".adTiming").hide();
+            //$(".adTiming").hide();
             $(".adPlanning").show();
             updateAdAmounts();
+            resetChosen();
             if (phase == 2)
                 incrementPhase();
         }
         
-        function adBack() {
-            readiness--;
-            $(".adTiming").show();
-            $(".adPlanning").hide();
-            var button;
+        function resetChosen() {
             for (var i = 0; i < ads.length; i++) {
                 button = document.getElementById("adButton" + i);
                 if (button.innerHTML == "Remove")
                     sellButtonClick(i);
             }
+            updateAdAmounts();
+            toStoryMode();
         }
         
         function sliderUpdate() {
@@ -652,7 +664,8 @@
             document.getElementById("adAvailible").innerHTML = "Availible " + sliderValue + ":00";
             document.getElementById("adAvailible").style = "display:inline; margin-right:30px";
             document.getElementById("adTotal").innerHTML = "Total: " + sliderValue + ":00";
-            document.getElementById("adTotal").style = "display:inline";
+            document.getElementById("adTotal").style = "display:inline; margin-right:30px";
+            document.getElementById("adRevenue").style = "display:inline";
         }
         
         function numToDisplayNum(num, dollar) {
