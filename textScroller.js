@@ -3,7 +3,7 @@ var textArray = [];
 var textDone;
 var scrollCount;
 var textLoop;
-var maxChar = 100;
+var maxChar = 98;
 
 document.onkeypress = function (e) {
     e = e || window.event;
@@ -18,6 +18,7 @@ function textScroll(text) {
     currArrayPos = 0;
     textArray = [];
     document.activeElement.blur(); //Kludged but stops "enter" during text from triggering buttons
+    document.getElementById("textScroll").style.width = "88%";
     clipText(text);
     newScroll(textArray[currArrayPos]);
     textDone = false;
