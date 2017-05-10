@@ -112,14 +112,14 @@
         <p class="adPlanning" id="adAvailible" hidden> ERROR </p>
         <p class="adPlanning" id="adTotal" hidden> ERROR </p>
         <p class="adPlanning" id="adRevenue" hidden> Total Revenue: $0 </p>
-        <button class="adPlanning" id="adChosenConfirm" onclick="adConfirmPress()" hidden> Confirm </button>
+        <button id="adChosenConfirm" onclick="adConfirmPress()" hidden> Confirm </button>
         <table class="adPlanning" id="advertisingTable" style="margin-top:15px" hidden>
         </table>
         <h1> Allot Time </h1>
-        <input id="adRange" class="adTiming" type="range" min = "5" max="25">
+        <input id="adRange" class="adTiming" type="range" style = "margin-right: 20px" min = "5" max="25">
+        <button class="adTiming" onclick="adTimingConfirm()"> Confirm </button>
         <p id="adValue" class="adTiming"> ERROR </p>
         <p id="newsValue" class="adTiming"> ERROR </p>
-        <button class="adTiming" onclick="adTimingConfirm()"> Confirm </button>
     </div>
     
     <div id='Anchors' class = 'tabContent'>
@@ -159,7 +159,6 @@
         var currentAnchor = linda;
         var reputationText = "You're running a small time trusted local news source."
         
-        var phase = 0;
         var sliderValue;
         
         var adRevenue = 0;
@@ -193,13 +192,23 @@
         
         var socaStory = false;
         
+        var tutorial = localStorage.getItem('tutorial');
+        
+        var phase = 0;
+        
+        if (tutorial == 0)
+            phase = 1;
+        
         startTab();
         displayStats();
         displayAdvertising();
         displayAnchors();
-        setTimeout(function(){
-            introSpeech();
-        },100);
+        
+        if (tutorial != 0) {
+            setTimeout(function(){
+                introSpeech();
+            },100);
+        }
              
         var sliderLoop = setInterval(function() { sliderUpdate();}, 30);
         
@@ -224,38 +233,45 @@
         }
         
         function incrementPhase() {
-            //$("#dialogueBox").show();
-            if (phase == 0)
+            if (phase == 0 && tutorial != 0) {
+                $("#dialogueBox").show();
                 setTimeout(function(){
                     document.getElementById("broadcastTab").style.backgroundColor = "gold";
                 },350);
-            else if (phase == 1) {
+            }
+            else if (phase == 1 && tutorial != 0) {
+                $("#dialogueBox").show();
                 document.getElementById("broadcastTab").style.backgroundColor = "#ccc";
                 textScroll(module0Text[1]);
             }
-            else if (phase >= 2 && phase <= 5) {
+            else if (phase >= 2 && phase <= 5 && tutorial != 0) {
+                $("#dialogueBox").show();
                 textScroll(module0Text[phase]);
             }
             else if (phase == 6) {
+                $("#dialogueBox").show();
                 if (socaStory)
                     textScroll(module0Text[6]);
                 else
                     textScroll(module0Text[7]);
             }
-            else if (phase == 7)
+            else if (phase == 7) {
+                $("#dialogueBox").show();
                 textScroll(module0Text[8]);
+            }
             phase++;
         }
         
         function adConfirmPress() {
             $(".storyPlanning").show();
+            $("#adChosenConfirm").hide();
             document.getElementById("storyAvailible").style = "display:inline; margin-right:30px";
             document.getElementById("storyTotal").style = "display:inline";
             toStoryMode();
         }
         
         function introSpeech() {
-            //$("#dialogueBox").show();
+            $("#dialogueBox").show();
             textScroll(module0Text[0]);
         }
 
@@ -308,7 +324,7 @@
         
         function endCycle() {
             if (chosenStories[0] == null) {
-                //$("#dialogueBox").show();
+                $("#dialogueBox").show();
                 textScroll("You're not ready to broadcast yet! Check the broadcast pannel!");
             }
             else {
@@ -334,13 +350,11 @@
                     window.location.replace("gameOver.html");
                 }
                 displayMoneySheet();
-                adRevenue = 0;
                 evalStories();
                 if (toTell.length > 0)
                     reputationText = "";
                 for (var i = 0; i < toTell.length; i++)
                     reputationText += toTell[i]; 
-                resetUI();
                 displayStats();
                 stories = [story0,story1,story2, story3,story4];
                 if (cycle == 0) {
@@ -363,6 +377,8 @@
                     anchorList.push(heather);
                     displayAnchors();
                 }
+                toStoryMode();
+                adReset();
                 cycle++;
             }
         }
@@ -397,19 +413,44 @@
                                 ads.splice(index, 1);
                             }
                             socaStory = true;
+                            displayAdvertising();
+                            adReset();
                         }
                 }
             }
             chosenStories = [];
         }
         
-        function resetUI() {
-            $("#adRevenue").hide();
-            $("#adChosenConfirm").hide();
-            $(".storyPlanning").hide();
-            $(".adPlanning").hide();
-            $(".adTiming").show();
-            displayAdvertising();
+        function adReset() {
+            adTimeAvailible = sliderValue;
+            adRevenue = 0;
+            alert(1);
+            for (var i = 0; i < ads.length; i++) {
+                    if(document.getElementById("adButton" + i).className == "sellButton") {
+                        adRevenue += addViewerBonus(parseInt(ads[i].value));
+                        adTimeAvailible -= ads[i].minutes;
+                    }
+            }
+            
+            document.getElementById("adRevenue").innerHTML = "Total Revenue: " + numToDisplayNum(adRevenue, true);
+            document.getElementById("adAvailible").innerHTML = "Availible " + adTimeAvailible + ":00";
+            document.getElementById("adAvailible").style = "display:inline; margin-right:30px";
+            document.getElementById("adTotal").innerHTML = "Total: " + sliderValue + ":00";
+            document.getElementById("adTotal").style = "display:inline; margin-right:30px";
+            document.getElementById("adRevenue").style = "display:inline";
+            
+            var table = "";
+            for (var i = 0; i < ads.length; i++) {
+                table += "<tr>";
+                table += "<td><button id='adButton" + i + "' class='" + document.getElementById("adButton" + i).className +"'"; 
+                if (document.getElementById("adButton" + i).className == "addButton")
+                    table += "onclick='buyButtonClick(" + i + ")'>Add</button></td>"
+                else 
+                    table += "onclick='sellButtonClick(" + i + ")'>Remove</button></td>"
+                table += "<td style='margin-top:8px'>" + ads[i].name + ": " + numToDisplayNum(addViewerBonus(parseInt(ads[i].value)),true) + " for " + ads[i].minutes + " minutes." + "</td>";
+                table += "</tr>";
+            }
+            document.getElementById("advertisingTable").innerHTML = table;
         }
         
         function toStoryMode() {
@@ -418,8 +459,6 @@
             chosenStories = [];
             document.getElementById("storyAvailible").innerHTML = "Availible " + storyTimeAvailible + ":00";
             document.getElementById("storyTotal").innerHTML = "Total: " + storyTimeAvailible + ":00";
-            //$("#adRevenue").hide();
-            //$("#adChosenConfirm").hide();
             displayStories();
             displayBroadcast();
             
@@ -556,7 +595,7 @@
         function buyButtonClick(given) {
             var button = document.getElementById("adButton" + given);
             if (adTimeAvailible - ads[given].minutes >= 0) {
-                adTimeAvailible = adTimeAvailible - ads[given].minutes;
+                adTimeAvailible = adTimeAvailible - parseInt(ads[given].minutes);
                 button.className = "sellButton";
                 button.innerHTML = "Remove";
                 button.onclick = function(){sellButtonClick(given)};
@@ -584,7 +623,7 @@
                 displayBroadcast();
             }
             else {
-                warningFlash("adAvailible");
+                warningFlash("storyAvailible");
             }
         }
         
@@ -628,15 +667,16 @@
             button.className = "addButton";
             button.innerHTML = "Add";
             button.onclick = function(){buyButtonClick(given)};
-            adTimeAvailible = adTimeAvailible + ads[given].minutes;
+            adTimeAvailible = parseInt(adTimeAvailible) + parseInt(ads[given].minutes);
             document.getElementById("adAvailible").innerHTML = "Availible " + adTimeAvailible + ":00";
             adRevenue -= addViewerBonus(parseInt(ads[given].value));
             document.getElementById("adRevenue").innerHTML = "Total Revenue: " + numToDisplayNum(adRevenue, true);
         }
         
         function adTimingConfirm() {
-            //$(".adTiming").hide();
             $(".adPlanning").show();
+            if (phase < 3)
+                $("#adChosenConfirm").show();
             updateAdAmounts();
             resetChosen();
             if (phase == 2)

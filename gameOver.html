@@ -10,7 +10,8 @@
 <body>
     <h1> You went bankrupt! </h1>
     <table id="endDisplay"></table>
-    <button onclick="window.location.replace('start.html');"> Try Again </button>
+    <br>
+    <button onclick="newGame()"> Try Again </button>
     <script>
         var endTable = "<table>";
         endTable += "<tr><td>Ad Revenue: " + localStorage.getItem('finalAdRevenue') + "</td></tr>";
@@ -19,6 +20,18 @@
         endTable += "<tr><td>Total: " + (localStorage.getItem('finalAdRevenue') - localStorage.getItem('finalSalary') - localStorage.getItem('finalExpenses')) + "</td></tr>";
         endTable += "<table>";
         document.getElementById("endDisplay").innerHTML = endTable;
+        
+        function newGame() {
+            window.location.replace('start.html');
+        }
+        
+        /*function openWin() {
+            myWindow = window.open("start.html", "", "width=2560, height=1600");  // Opens a new window
+                    myWindow.focus(); 
+                    window.location.replace('start.html');
+        }
+        
+        openWin();*/
     </script>
 </body>
 </html>

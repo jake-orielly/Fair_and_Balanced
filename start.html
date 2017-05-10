@@ -42,6 +42,10 @@
     <input type="text" id="firstName" class="form" value="John">
     <input type="text" id="lastName" class="form" value="Smith">
     <button class="form" onclick="submit()">Sign</button>
+    <br>
+    <br>
+    <p style="float:left;">Tutorial Mode</p>
+    <input id="checkBox" type="checkbox" checked style="float:left">
     
     <div id="dialogueBox" class="contract" hidden>
         <img id="portrait" src="art/anchor1.png" alt="error loading image">
@@ -91,6 +95,10 @@
         }
         
         function nextPage() {
+            if (document.getElementById('checkBox').checked)
+                localStorage.setItem('tutorial', 1);
+            else
+                localStorage.setItem('tutorial', 0);
             window.location.replace("module0.html");
         }
         
