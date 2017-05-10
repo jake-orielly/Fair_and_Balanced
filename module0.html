@@ -160,6 +160,7 @@
         var reputationText = "You're running a small time trusted local news source."
         
         var phase = 0;
+        var sliderValue;
         
         var adRevenue = 0;
         var adTimeAvailible;
@@ -168,24 +169,25 @@
         
         var cycle = 0;
         
-        var story0 = {name:"Local Politics", effect:"rep -3", breaking:false};
-        var story1 = {name:"National Politics", effect:"rep 3", breaking:false};
-        var story2 = {name:"Global Politics", effect:"views -3", breaking:false};
-        var story3 = {name:"Local Crime", effect:"views 3", breaking:false};
-        var story4 = {name:"Celebrity News", effect:"views 3;rep -3", breaking:false};
+        var story0 = {name:"Local Politics", effect:"views -3;rep 3", breaking:false};
+        var story1 = {name:"National Politics", effect:"views 3", breaking:false};
+        var story2 = {name:"Global Politics", effect:"rep -3", breaking:false};
+        var story3 = {name:"Violent Crime", effect:"views 3", breaking:false};
+        var story4 = {name:"Celebrities", effect:"views 3;rep -3", breaking:false};
         
-        var breakingNews1 = {name:"Local Shooting", effect:"views 1000", breaking:true};
-        var breakingNews2 = {name:"Soca Cola Scandal", effect:"views 600", breaking:true};
+        var breakingNews1 = {name:"Local Shooting", effect:"views 9", breaking:true};
+        var breakingNews2 = {name:"Soca Cola Scandal", effect:"views 9", breaking:true};
         
         var stories = [story0,story1,story2, story3,story4];
         
         var chosenStories = [];
         
-        var ad1 = {name:"Soca Cola", value:35000, image:"colaSoda.png", minutes:5};
-        var ad2 = {name:"Pharma", value:15000, image:"colaSoda.png", minutes:6};
-        var ad3 = {name:"Guns", value:10000, image:"colaSoda.png",minutes:4};
-        var ad4 = {name:"Cars", value:30000, image:"colaSoda.png",minutes:8};
+        var ad1 = {name:"Soca Cola", value:33000, image:"colaSoda.png", minutes:5};
+        var ad2 = {name:"Pharma", value:12000, image:"colaSoda.png", minutes:6};
+        var ad3 = {name:"Guns", value:9000, image:"colaSoda.png",minutes:4};
+        var ad4 = {name:"Cars", value:28000, image:"colaSoda.png",minutes:8};
         var ads = [ad1,ad2,ad3,ad4];
+        
         
         var storyTimeAvailible
         
@@ -198,7 +200,7 @@
         setTimeout(function(){
             introSpeech();
         },100);
-        
+             
         var sliderLoop = setInterval(function() { sliderUpdate();}, 30);
         
         document.getElementById("dialogueBoxImage").style.width = window.innerWidth*0.89 + "px";
@@ -411,7 +413,7 @@
         }
         
         function toStoryMode() {
-            var sliderValue = document.getElementById("adRange").value;
+            sliderValue = document.getElementById("adRange").value;
             storyTimeAvailible = 60-parseInt(sliderValue);
             chosenStories = [];
             document.getElementById("storyAvailible").innerHTML = "Availible " + storyTimeAvailible + ":00";
@@ -525,7 +527,7 @@
             for (var i = 0; i < ads.length; i++) {
                 table += "<tr>";
                 table += "<td><button id='adButton" + i + "' class='addButton' onclick='buyButtonClick(" + i + ")'>Add</button></td>"
-                table += "<td style='margin-top:8px'>" + ads[i].name + ": " + numToDisplayNum(ads[i].value,true) + " for " + ads[i].minutes + " minutes." + "</td>";
+                table += "<td style='margin-top:8px'>" + ads[i].name + ": " + numToDisplayNum(addViewerBonus(parseInt(ads[i].value)),true) + " for " + ads[i].minutes + " minutes." + "</td>";
                 table += "</tr>";
             }
             document.getElementById("advertisingTable").innerHTML = table;
@@ -559,7 +561,7 @@
                 button.innerHTML = "Remove";
                 button.onclick = function(){sellButtonClick(given)};
                 document.getElementById("adAvailible").innerHTML = "Availible " + adTimeAvailible + ":00";
-                adRevenue += ads[given].value;
+                adRevenue += addViewerBonus(parseInt(ads[given].value));
                 document.getElementById("adRevenue").innerHTML = "Total Revenue: " + numToDisplayNum(adRevenue, true);
             }
             else {
@@ -577,7 +579,7 @@
                 button.className = "sellButton";
                 button.innerHTML = "Remove";
                 button.onclick = function(){removeStoryClick(given)};
-                document.getElementById("adAvailible").innerHTML = "Availible " + storyTimeAvailible + ":00";
+                document.getElementById("storyAvailible").innerHTML = "Availible " + storyTimeAvailible + ":00";
                 chosenStories[chosenStories.length] = stories[given];
                 displayBroadcast();
             }
@@ -596,7 +598,7 @@
             button.innerHTML = "Add";
             button.onclick = function(){addStoryClick(given)};
             storyTimeAvailible = storyTimeAvailible + storyTime;
-            document.getElementById("adAvailible").innerHTML = "Availible " + storyTimeAvailible + ":00";
+            document.getElementById("storyAvailible").innerHTML = "Availible " + storyTimeAvailible + ":00";
             index = chosenStories.indexOf(stories[given]);
             if (index > -1) {
                 chosenStories.splice(index, 1);
@@ -628,7 +630,7 @@
             button.onclick = function(){buyButtonClick(given)};
             adTimeAvailible = adTimeAvailible + ads[given].minutes;
             document.getElementById("adAvailible").innerHTML = "Availible " + adTimeAvailible + ":00";
-            adRevenue -= ads[given].value;
+            adRevenue -= addViewerBonus(parseInt(ads[given].value));
             document.getElementById("adRevenue").innerHTML = "Total Revenue: " + numToDisplayNum(adRevenue, true);
         }
         
@@ -652,13 +654,21 @@
         }
         
         function sliderUpdate() {
-            var sliderValue = document.getElementById("adRange").value;
+            sliderValue = document.getElementById("adRange").value;
             document.getElementById("adValue").innerHTML = "Advertisements " + sliderValue + ":00";
             document.getElementById("newsValue").innerHTML = "News " + (60-sliderValue) + ":00";
         }
         
+        function addViewerBonus(given) {
+            var total = given/100;
+            var modifier = (viewers - 40000) / 80000;
+            total += parseInt(total * modifier);
+            total = total*100;
+            return total;
+        }
+        
         function updateAdAmounts() {
-            var sliderValue = document.getElementById("adRange").value;
+            sliderValue = document.getElementById("adRange").value;
             document.getElementById("adRevenue").innerHTML = "Total Revenue: " + numToDisplayNum(adRevenue, true);
             adTimeAvailible = sliderValue;
             document.getElementById("adAvailible").innerHTML = "Availible " + sliderValue + ":00";
