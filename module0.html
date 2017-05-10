@@ -140,8 +140,8 @@
     </div>
     
     <script>
-        var module0Text = ["This is the Channel 5 News Room! This is where you'll be making all the important decisions about how to run the network! The first thing we need to do is go over to the broadcast tab!", "First move the slider to choose how much time you want to allocate for commercials and how much you want to use for news. Too much news and we won't be able to pay the bills. Too much advertising and we won't be able to keep people watching. Don't worry too much, you can change it at the start of each week.","Now select which advertisers to schedule for the program. As our reputation grows, bigger advertisers will bid for space on our program.","Now you just have to select which stories to air and we'll be ready to broadcast! Once you're done, go to the \"Board\" tab and start the broadcast!","Some poor man was shot today. When these horrible things happen, we have a responsibility to get the information out to the public so they can stay safe. We call these \"Breaking News Stories\". These stories offer a one time oppurtunity to get some extra viewers and can be very important to the station. However, they do take longer than a normal story to cover.","Hello. I am Mr. Sullivan, the Board of Director's representative. We here at channel 5 are first and foremost an institute of journalism, but we also have a responsibility to our investors to remain profitable. Sometimes, we have to make sacrifices in the short term to ensure the station can keep running in the long term. To that end, one of our journalists has written a story about a Soca Cola \"scandal\". As they are one of our biggest advertisers, I personally called and asked them about the nature of this story and they assured me it was nothing but a misunderstanding, and requested that we wait to cover this story until we have all the facts. While you ultimately have creative control at the station, I hope you will use discretion in regards to this matter.","Because you decided to rush ahead and run that Soca Cola story they've decided to pull their advertising. I hope that in the future you will be more prudent in these matters. We sometimes have to make tough decisions in this business, and I worry about how your decision making will affect the future viability of this station.","I noticed you decided not to run the Soca Cola story. I appreciate your prudence in this matter and I know they do as well. We sometimes have to make tough decisions in this business, and I'm glad to know I can count on you to think things through rationally.","We received a very promising applicatoin for the position of anchor here, who I hope you will consider. Linda has been good to this company, but we have to make our decisions based on the company as a whole, not just based on individuals. This new anchor could bring a fresh face that would really help our image.","Unfortunately we can not have 2 anchors at this time."];
-
+        var module0Text = ["This is the Channel 5 News Room! This is where you'll be making all the important decisions about how to run the network! The first thing we need to do is go over to the broadcast tab!", "First move the slider to choose how much time you want to allocate for commercials and how much you want to use for news. Too much news and we won't be able to pay the bills. Too much advertising and we won't be able to keep people watching. Don't worry too much, you can change it at the start of each week.","Now select which advertisers to schedule for the program. As our reputation grows, bigger advertisers will bid for space on our program.","Now you just have to select which stories to air and we'll be ready to broadcast! Once you're done, go to the \"Board\" tab and start the broadcast!","Some poor man was shot today. When these horrible things happen, we have a responsibility to get the information out to the public so they can stay safe. We call these \"Breaking News Stories\". These stories offer a one time oppurtunity to get some extra viewers and can be very important to the station. However, they do take longer than a normal story to cover.","Hello. I am Mr. Sullivan, the Board of Director's representative. We here at channel 5 are first and foremost an institute of journalism, but we also have a responsibility to our investors to remain profitable. Sometimes, we have to make sacrifices in the short term to ensure the station can keep running in the long term. To that end, one of our journalists has written a story about a Soca Cola \"scandal\". As they are one of our biggest advertisers, I personally called and asked them about the nature of this story and they assured me it was nothing but a misunderstanding, and requested that we wait to cover this story until we have all the facts. While you ultimately have creative control at the station, I hope you will use discretion in regards to this matter.","Because you decided to rush ahead and run that Soca Cola story they've decided to pull their advertising. I hope that in the future you will be more prudent in these matters. We sometimes have to make tough decisions in this business, and I worry about how your decision making will affect the future viability of this station.","I noticed you decided not to run the Soca Cola story. I appreciate your prudence in this matter and I know they do as well. We sometimes have to make tough decisions in this business, and I'm glad to know I can count on you to think things through rationally.","We received a very promising application for the position of anchor here, who I hope you will consider. Linda has been good to this company, but we have to make our decisions based on the company as a whole, not just based on individuals. This new anchor could bring a fresh face that would really help our image."];
+        
     </script>
     
     <script>
@@ -169,10 +169,14 @@
         var cycle = 0;
         
         var story0 = {name:"Local Politics", effect:"views -3;rep 3", breaking:false};
-        var story1 = {name:"National Politics", effect:"views 3", breaking:false};
-        var story2 = {name:"Global Politics", effect:"rep -3", breaking:false};
+        var story1 = {name:"National Politics", effect:"views 3;", breaking:false};
+        var story2 = {name:"Global Politics", effect:"rep -3;", breaking:false};
         var story3 = {name:"Violent Crime", effect:"views 3", breaking:false};
         var story4 = {name:"Celebrities", effect:"views 3;rep -3", breaking:false};
+        
+        var polStory0 = {name:"National Politics", effect:"orange 1", breaking:false};
+        var polStory1 = {name:"National Politics", effect:"green 1", breaking:false};
+        var polStory2 = {name:"Orange Party Scandal", effect:"green 3", breaking:true};
         
         var breakingNews1 = {name:"Local Shooting", effect:"views 9", breaking:true};
         var breakingNews2 = {name:"Soca Cola Scandal", effect:"views 9", breaking:true};
@@ -181,11 +185,14 @@
         
         var chosenStories = [];
         
-        var ad1 = {name:"Soca Cola", value:33000, image:"colaSoda.png", minutes:5};
-        var ad2 = {name:"Pharma", value:12000, image:"colaSoda.png", minutes:6};
-        var ad3 = {name:"Guns", value:9000, image:"colaSoda.png",minutes:4};
-        var ad4 = {name:"Cars", value:28000, image:"colaSoda.png",minutes:8};
+        var ad1 = {name:"Soca Cola", value:33000, minutes:5, minRep: 10, maxRep: 50};
+        var ad2 = {name:"Pharmacuticals", value:12000, minutes:6, minRep: 10, maxRep: 50};
+        var ad3 = {name:"Guns", value:9000, minutes:4, minRep: 10, maxRep: 30};
+        var ad4 = {name:"Cars", value:28000, minutes:8, minRep: 15, maxRep: 50};
+        var ad5 = {name:"Injury Lawyer", value:10000, minutes:6, minRep: 5, maxRep: 15};
+        var ad6 = {name:"Luxury Resort", value:30000, minutes:5, minRep: 25, maxRep: 60};
         var ads = [ad1,ad2,ad3,ad4];
+        var adMaster = [ad1,ad2,ad3,ad4,ad5,ad6];
         
         
         var storyTimeAvailible
@@ -276,23 +283,30 @@
         }
 
         function hireAnchor() {
-            if (currentAnchor != null)
-                alert(module0Text[9]);
+            if (currentAnchor != null) {
+                $("#dialogueBox").show();
+                textScroll("Unfortunately we can not have 2 anchors at this time.");
+            }
             else {
                 currentAnchor = heather;
                 $("#heatherHire").hide();
             }
+            reputation += heather.experience;
+            viewers += heather.attractiveness * 1500;
         }
         
         function fireAnchor() {
             $("#lindaPic").hide();
             $("#lindaFire").hide();
-            index = anchorList.indexOf(linda);
+            /*index = anchorList.indexOf(linda);
             if (index > -1) {
                 anchorList.splice(index, 1);
-            }
+            }*/
+            anchorList = [heather];
             displayAnchors();
             currentAnchor = null;
+            reputation -= linda.experience;
+            viewers -= linda.attractiveness * 1500;
         }
         
         function displayStats() {
@@ -351,6 +365,9 @@
                 }
                 displayMoneySheet();
                 evalStories();
+                if (cycle == 4 && currentAnchor.name == "Heather") {
+                    reputationText = "People love your new anchor!";
+                }
                 if (toTell.length > 0)
                     reputationText = "";
                 for (var i = 0; i < toTell.length; i++)
@@ -377,6 +394,7 @@
                     anchorList.push(heather);
                     displayAnchors();
                 }
+                toTell = "";
                 toStoryMode();
                 adReset();
                 cycle++;
@@ -412,6 +430,10 @@
                             if (index > -1) {
                                 ads.splice(index, 1);
                             }
+                            index = adMaster.indexOf(ad1);
+                            if (index > -1) {
+                                adMaster.splice(index, 1);
+                            }
                             socaStory = true;
                             displayAdvertising();
                             adReset();
@@ -424,14 +446,17 @@
         function adReset() {
             adTimeAvailible = sliderValue;
             adRevenue = 0;
-            alert(1);
-            for (var i = 0; i < ads.length; i++) {
-                    if(document.getElementById("adButton" + i).className == "sellButton") {
-                        adRevenue += addViewerBonus(parseInt(ads[i].value));
-                        adTimeAvailible -= ads[i].minutes;
-                    }
+            ads = [];
+            for (var i = 0; i < adMaster.length; i++) {
+                if (reputation > adMaster[i].minRep && reputation < adMaster[i].maxRep)
+                    ads.push(adMaster[i]);
             }
-            
+            for (var i = 0; i < ads.length; i++) {
+                if(document.getElementById("adButton" + i) != null && document.getElementById("adButton" + i).className == "sellButton"){
+                    adRevenue += addViewerBonus(parseInt(ads[i].value));
+                    adTimeAvailible -= ads[i].minutes;
+                }
+            }
             document.getElementById("adRevenue").innerHTML = "Total Revenue: " + numToDisplayNum(adRevenue, true);
             document.getElementById("adAvailible").innerHTML = "Availible " + adTimeAvailible + ":00";
             document.getElementById("adAvailible").style = "display:inline; margin-right:30px";
@@ -442,8 +467,13 @@
             var table = "";
             for (var i = 0; i < ads.length; i++) {
                 table += "<tr>";
-                table += "<td><button id='adButton" + i + "' class='" + document.getElementById("adButton" + i).className +"'"; 
-                if (document.getElementById("adButton" + i).className == "addButton")
+                if (document.getElementById("adButton" + i) == null)
+                    table += "<td><button id='adButton" + i + "' class='addButton'";
+                else
+                    table += "<td><button id='adButton" + i + "' class='" + document.getElementById("adButton" + i).className +"'"; 
+                if (document.getElementById("adButton" + i) == null)
+                    table += "onclick='buyButtonClick(" + i + ")'>Add</button></td>"
+                else if (document.getElementById("adButton" + i).className == "addButton")
                     table += "onclick='buyButtonClick(" + i + ")'>Add</button></td>"
                 else 
                     table += "onclick='sellButtonClick(" + i + ")'>Remove</button></td>"
@@ -509,6 +539,10 @@
                     else 
                         result.push("viewsDown.png");
                 }
+                else if (currEffect[0] == "green")
+                    result.push("greenParty.png");
+                else if (currEffect[0] == "orange")
+                    result.push("orangeParty.png");
             }
             return result;
         }

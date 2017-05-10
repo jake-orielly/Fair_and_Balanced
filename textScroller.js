@@ -3,7 +3,7 @@ var textArray = [];
 var textDone;
 var scrollCount;
 var textLoop;
-var maxChar = 104;
+var maxChar = 100;
 
 document.onkeypress = function (e) {
     e = e || window.event;
@@ -26,7 +26,7 @@ function textScroll(text) {
 function newScroll (text) {
     scrollCount = 0;
     scroll(text);
-    textLoop = setInterval(function() { scroll(text); }, 30);
+    textLoop = setInterval(function() { scroll(text); }, 5);
 }
 
 function scroll(text) {

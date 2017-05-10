@@ -97,6 +97,7 @@ input[type=range]:focus::-ms-fill-upper {
     display:inline-block;
     cursor:pointer;
     color:#ffffff;
+    font-weight:bold;
     font-family:Arial;
     font-size:17px;
     padding:5px 15px;
@@ -120,6 +121,7 @@ input[type=range]:focus::-ms-fill-upper {
     display:inline-block;
     cursor:pointer;
     color:#ffffff;
+    font-weight:bold;
     font-family:Arial;
     font-size:17px;
     padding:5px 15px;
@@ -143,6 +145,7 @@ input[type=range]:focus::-ms-fill-upper {
     border:1px solid #18ab29;
     cursor:pointer;
     color:#ffffff;
+    font-weight:bold;
     font-family:Arial;
     font-size:17px;
     padding:5px 15px;
@@ -166,6 +169,7 @@ input[type=range]:focus::-ms-fill-upper {
     cursor:pointer;
     color:#ffffff;
     font-family:Arial;
+    font-weight:bold;
     font-size:17px;
     padding:5px 15px;
     text-decoration:none;
