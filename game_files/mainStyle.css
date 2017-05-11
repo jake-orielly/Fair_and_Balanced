@@ -1,0 +1,20 @@
+* {
+    font-family: "Courier New";
+}
+
+body {
+    background-color: whitesmoke;
+}
+
+.scrollText { 
+    position: absolute; 
+    top: -25px; 
+    left: 138px; 
+    width: 85%;
+    font-size: 48px;
+}
+
+#dialogueBox {
+    position:absolute;
+    bottom:0;
+}

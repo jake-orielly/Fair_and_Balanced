@@ -8,7 +8,7 @@
 </style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
 <body>
-    <h1> You went bankrupt! </h1>
+    <h1 id="cause"> You lose! </h1>
     <table id="endDisplay"></table>
     <br>
     <button onclick="newGame()"> Try Again </button>
@@ -21,17 +21,14 @@
         endTable += "<table>";
         document.getElementById("endDisplay").innerHTML = endTable;
         
+        if (localStorage.getItem("cause") == "viwers")
+            document.getElementById("cause") = "People stopped watching your channel!";
+        else
+            document.getElementById("cause") = "You went bankrupt!";
+        
         function newGame() {
             window.location.replace('start.html');
         }
-        
-        /*function openWin() {
-            myWindow = window.open("start.html", "", "width=2560, height=1600");  // Opens a new window
-                    myWindow.focus(); 
-                    window.location.replace('start.html');
-        }
-        
-        openWin();*/
     </script>
 </body>
 </html>

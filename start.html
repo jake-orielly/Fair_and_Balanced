@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="mainStyle.css">
+    <link rel="stylesheet" type="text/css" href="game_files/mainStyle.css">
 </head>
 <style>
     input {
@@ -56,12 +56,12 @@
     </div>
     
     <script>
-        var text = ["Congratulations on being hired", "! Director of Programming is a very important position! My name is Linda, I'm the anchor here, I'll be showing you around! Let's get started!"];
+        var text = ["Congratulations on being hired", "! Director of Programming is a very important position!; My name is Linda, I'm the anchor here, I'll be showing you around! Let's get started!"];
         var submitted = false;
         var phase = 0;
         
-        document.getElementById("dialogueBoxImage").style.width = window.innerWidth*0.89 + "px";
-        document.getElementById("dialogueBoxImage").style.height = window.innerHeight*0.33 + "px";
+        document.getElementById("dialogueBoxImage").style.width = window.innerWidth*0.90 + "px";
+        document.getElementById("dialogueBoxImage").style.height = window.innerHeight*0.29 + "px";
         
         document.onkeypress = function (e) {
             e = e || window.event;
@@ -99,7 +99,7 @@
                 localStorage.setItem('tutorial', 1);
             else
                 localStorage.setItem('tutorial', 0);
-            window.location.replace("module0.html");
+            window.location.replace("main.html");
         }
         
         function getPhase() {
@@ -111,10 +111,10 @@
         }
     </script>
     
-    <script src="textScroller.js">
+    <script src="game_files/textScroller.js">
         
     </script>
     
-    <script src="texts.js"></script>
+    <script src="game_files/texts.js"></script>
 </body>
 </html>

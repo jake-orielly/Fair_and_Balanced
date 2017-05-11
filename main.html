@@ -1,171 +1,892 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <link rel="stylesheet" type="text/css" href="game_files/mainStyle.css">
+    <link rel="stylesheet" type="text/css" href="game_files/elementStyle.css">
+</head>
 <style>
-    /*Use of all images for comercial use covered under Creative Commons*/
-    
-    * {
-        font-family: "Courier New"
+    h1 {
+        text-decoration: underline;
+    }
+    table {
+        padding-left: 10px;
     }
     
-    body {
-        background-color: whitesmoke;
-    }
-    
-    input {
-        height: 40px;
-        font-size: 24px;
-        border: solid 1px #dcdcdc;
-        padding: 0px;
-        width: 200px;
+    td {
+        font-size: 18px;
+        margin-bottom: 10px;
+        margin-right: 5px;
+        float:left;
     }
     
     button {
-        width: 120px;
-        height: 40px;
-        font-size: 24px;
-        padding: 0px;
+        background-color:#FFFFFF;
+        -moz-border-radius:5px;
+        -webkit-border-radius:5px;
+        border-radius:5px;
+        font-family:Arial;
+        font-size:12px;
+        padding:3px 6px;
+        color:#000000;
     }
     
-    select {
-        height: 40px;
-        font-size: 24px;
-        border: solid 1px #dcdcdc;
-        padding: 0px;
+    .statBar {
+        margin-top: 2px;
+        width:6px;
+        height:14px;
+        border:2px solid #000;
+        float:left; 
+        margin-left:1px
     }
     
-    div {
-        position:absolute;
-        bottom:0;
-        width:100%;
-        height:60px;
+    ul.tab {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        border: 1px solid #ccc;
+        background-color: #f1f1f1;
+    }
+    /* Float the list items side by side */
+    ul.tab li {float: left;}
+    /* Style the links inside the list items */
+    ul.tab li a {
+        display: inline-block;
+        color: black;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-size: 17px;
+    }
+    /* Change background color of links on hover */
+    ul.tab li a:hover {
+        background-color: #ddd;
+    }
+    /* Create an active/current tabLink class */
+    ul.tab li a:focus, .active {
+        background-color: #ccc;
+    }
+    /* Style the tab content */
+    .tabContent {
+        display: none;
+        padding: 6px 12px;
     }
     
-    #dialogueBox {
-        position:absolute;
-        height:150px;
-    }
-    
-    #firstChar {
-        float: left; 
-        font-size:24px; 
-        margin-right: 8px;
-        margin-top: 8px;
-    }
-    
-    .scrollText { 
-        position: absolute; 
-        top: -35px; 
-        left: 138px; 
-        width: 85%;
+    #newsroomHeader{
+        margin-left: 7%;
+        margin-bottom: 0px;
+        font-family:Futura, "Trebuchet MS", Arial, sans-serif;
+        font-style: italic;
         font-size: 48px;
+        text-decoration: underline;
     }
-    
 </style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
 <body>
-    <h1> Channel 5 News Employment Agreement</h1>
-    <p class="contract" hidden> EMPLOYMENT AGREEMENT dated as of April 12,2017 by and between Modern Medium Communications of Tampa, Inc., a Florida corporation, and <b><span id="employeeName"> [TEXT ERROR] </span></b>.</p>
-    <p class="contract" id="employmentContract" hidden></p>
-    <h2 class="form"> Please print your first and last name. </h2>
-    <select id="honorific" class="form">
-        <option value="Mr.">Mr.</option>
-        <option value="Mrs.">Mrs.</option>
-        <option value="Ms.">Ms.</option>
-        <option value="Mx.">Mx.</option>
-    </select>
-    <input type="text" id="firstName" class="form" value="John">
-    <input type="text" id="lastName" class="form" value="Smith">
-    <button class="form" onclick="submit()">Submit</button>
+    <img id="transitionCard" src="art/placeholderTransition.png" style="position:absolute; margin-left:25%" alt="error loading image" hidden>
+    <img src="art/logo.png" style="float:left; width: 64px; height:64px;" alt="error loading image">
+    <p id="newsroomHeader"> Channel 5 Newsroom </p>
+    <br>
+    <ul class="tab">
+        <li><a href="javascript:void(0)" class="tabLinks active" onclick="openTab(event, 'Board')">Board</a></li>
+        <li><a href="javascript:void(0)" id="broadcastTab" class="tabLinks" onclick="openTab(event, 'Broadcast')">Broadcast</a></li>
+        <li><a href="javascript:void(0)" id="anchorsTab" class="tabLinks" onclick="openTab(event, 'Anchors')">Anchors</a></li>
+    </ul>
+    
+    <div id='Board' class = 'tabContent'>
+        <h1 id='dayHeader'> Day 1 </h1>
+        <table id="statsTable">
+        </table>
+        <table id="moneySheet"></table>
+        <button style="font-size:24px; padding: 15px" onclick="endCycle()"> Begin Broadcast </button>
+    </div>
+    
+    <div id='Broadcast' class = 'tabContent'>
+        <table class="storyPlanning" id="broadcastTable" style="float: right; position: absolute; right: 10%;" hidden ><th><h1 class="storyPlanning" hidden>Broadcast </h1></th></table>
+        <h1 class="storyPlanning" id="storyHeader" hidden> Choose Stories </h1>
+        <p class="storyPlanning" id="storyAvailible" hidden> ERROR </p>
+        <p class="storyPlanning" id="storyTotal" hidden> ERROR </p>
+        <table class="storyPlanning" id="storyTable2" style="margin-top:15px" hidden>
+        </table>
+        <h1 class="adPlanning" hidden> Choose Advertising </h1>
+        <p class="adPlanning" id="adAvailible" hidden> ERROR </p>
+        <p class="adPlanning" id="adTotal" hidden> ERROR </p>
+        <p class="adPlanning" id="adRevenue" hidden> Total Revenue: $0 </p>
+        <button id="adChosenConfirm" onclick="adConfirmPress()" hidden> Confirm </button>
+        <table class="adPlanning" id="advertisingTable" style="margin-top:15px" hidden>
+        </table>
+        <h1> Allot Time </h1>
+        <input id="adRange" class="adTiming" type="range" style = "margin-right: 20px" min = "5" max="25">
+        <button class="adTiming" onclick="adTimingConfirm()"> Confirm </button>
+        <p id="adValue" class="adTiming"> ERROR </p>
+        <p id="newsValue" class="adTiming"> ERROR </p>
+    </div>
+    
+    <div id='Anchors' class = 'tabContent'>
+        <h1> Anchors </h1>
+        <table style="float:left">
+            <tr><td><img id="lindaPic" src="art/anchor1.png" style="float:left; margin-top:10px" alt="error loading image"></td></tr>
+            <button id="lindaFire" class="sellButtonTemp" onclick="fireAnchor()" hidden> Fire </button>
+            <tr><td><img id="heatherPic" onclick="hireAnchor()" src="art/anchor2.png" style="float:left; margin-top:40px" alt="error loading image" hidden></td></tr>
+        </table>
+        <table id="anchorTable" style="float:left">
+        </table>
+    </div>
     
     <div id="dialogueBox" class="contract" hidden>
         <img id="portrait" src="art/anchor1.png" alt="error loading image">
-        
         <img id="dialogueBoxImage" src="art/dialogueBox.png" alt="error loading image" style="width:304px;height:138px;">
-      
-        <p class = "scrollText" id="demo"></p>
-
+        <p class = "scrollText" id="textScroll"></p>
     </div>
     
     <script>
-        document.getElementById("dialogueBoxImage").style.width = window.innerWidth*0.89 + "px";
-
-        var scrollCount;
-        var textLoop;
-        var text = ["Congratulations on being hired", "! Director of Programming is a very important position! My name is Linda, I'm the anchor here, I'll be showing you around! Let's get started!"];
-        var maxChar = 64; //maximum number of characters that can fit in the dialogue box
-        var array = [];
-        var currArrayPos;
-        var textDone;
-        var submitted = false;
+        var module0Text = ["This is the Channel 5 News Room! This is where you'll be making all the important decisions about the network!; The first thing we need to do is go over to the broadcast tab!", "First move the slider to divide your time between commercials and news.; Too much news and we won't be able to pay the bills. Too much advertising and people won't want to watch.","Now select which ads to schedule for the program. If we get more viewers we will make more money from ads.; Our reputation will affect what ads are availible to us, the higher the better.","Now you just have to select which stories to air and we'll be ready to broadcast!; Stories with a green person symbol improve viewership. Stories with a green star symbol increase reputation.; The red symbols stand for decreases. Once you're done, go to the \"Board\" tab and start the broadcast!","Some poor man was shot today. Terrible as it is we have to remain professional about this situation.; When these terrible things happen, we have a responsibility to get the information out to the public.; How else can they stay safe? We call these \"Breaking News Stories\". They are very important to the station.; They will affect our viewership and reputation much more than other stories.; However, they do take longer than a normal story to cover.","Hello. I am Mr. Sullivan, the Board of Director's representative.; We here at channel 5 are first and foremost an institute of journalism, and we always will be.; However we also have a responsibility to our investors to remain profitable.; Sometimes, we have to make sacrifices in the short term to ensure the station can keep running long term.; To that end, one of our journalists has written a story about a Soca Cola \"scandal\".; As they are one of our biggest advertisers, I personally called and asked them about this story.; They assured me it was nothing but a misunderstanding, their drink does not cause people's teeth to fall out.; They requested that we wait to cover this story until we have all the facts.; While you have creative control at the station, I hope you will use discretion in regards to this matter.","Because you decided to rush ahead and run that Soca Cola story they've decided to pull their advertising.; I hope that in the future you will be more prudent in these matters.; We sometimes have to make tough decisions, and I worry about how your decision will affect the station.","I noticed you decided not to run the Soca Cola story.; I appreciate your prudence in this matter and I know they do as well.; We sometimes have to make tough decisions in this business, and I'm glad to know I can count on you.","We received a very promising application for the position of anchor here, who I hope you will consider.; Linda has been good to this company, but we have to make our decisions based on the company as a whole.; This new anchor could bring a fresh face that would really help our image.","Hello. My name is Officer Bradford, I'm here on behalf of the local police force.; There was a tragic school shooting yesterday, and we're asking all local news stations not to run the story.; We believe it will only glorify the shooter, inspire copycats, and bring more pain to the grieving families.; I hope you will use your best judgement on this issue."];
         
-        document.onkeypress = function (e) {
-            e = e || window.event;
-            if(e.keyCode == 32)
-                e.preventDefault();
-            if((e.keyCode == 13 || e.keyCode == 32) && textDone) {
-                textDone = false;
-                newScroll(array[currArrayPos]);
-            }
-        };
+        var electionText = ["Election season is starting up, and that means a lot of opportunities for the station.; We pride ourselves on presenting fair and balanced political coverage here at Channel 5.; However most of our viewers are Orange party voters, and we should respect their opinions as political consumers.; Stories with a political leaning will be marked with the appropriate orange or green logo.","We've just been offered a lucrative new advertsing bid, be sure to check the advertising section."];
         
-        function submit() {
-            if (!submitted) {
-                var honorific = document.getElementById("honorific").value;
-                var firstName = document.getElementById("firstName").value;
-                var lastName = document.getElementById("lastName").value;
-                var currText = text[0] + " " + honorific + " " + lastName + text[1];
-                textScroll(currText);
-                document.getElementById("employeeName").innerHTML = firstName + " " + lastName;
-                document.getElementById("employmentContract").innerHTML = employmentContractText;
-                $(".form").hide();
-                $(".contract").show();
-                submitted = true;
-            }
-        }
+        var warText = ["I'm sure you've heard by now that the US has decided to intervene in the civil war in Onum.; We're all proud patriots here, as are our viewers, and the rest of the orange party.; I'm sure I don't have to spell out the important role of news stations during war time.","Our armed forces have honored us with an advertising bid. I hope you will give it careful consideration."];
         
-        function clipText (given) {
-            if (given.length > maxChar) {
-                var endPoint;
-                for (var i = maxChar; i > 0; i--) {
-                    if (given.charAt(i) == ' ') {
-                        endPoint = i;
-                        break;
-                    }
-                }
-                
-                array[array.length] = given.substr(0,endPoint);
-                clipText(given.substr(endPoint,given.length));
-            }
-            else {
-                array[array.length] = given;
-            }
-        }
-        function textScroll(text) {
-            currArrayPos = 0;
-            clipText(text);
-            newScroll(array[currArrayPos]);
-            textDone = false;
-        }
-        
-        function newScroll (text) {
-            scrollCount = 0;
-            scroll(text);
-            textLoop = setInterval(function() { scroll(text); }, 40);
-        }
-        
-        function scroll(text) {
-            scrollCount++;
-            document.getElementById("demo").innerHTML = text.substr(0,scrollCount);
-            if (scrollCount == text.length) {
-                clearInterval(textLoop);
-                currArrayPos += 1;
-                textDone = true;
-            }
-        }
     </script>
     
     <script>
-    var employmentContractText = "The Company may terminate this Agreement and all of Employee's rights under this Agreement at any time for any reason. The following are illustrations of \"reason\" but the station is not limited, or bound by these illustrations: (i) misconduct; (ii) insubordination; (iii) failure to perform assigned work in the manner described in Paragraphsl(C)(D)(F) and P) of the Agreement; (iv) using, possessing, selling alcohol or illegal drugs on the Station's property or any other violation of the Company's drug and alcohol abuse policy;(v) dishonesty or deceit that does not serve the Company; (vi) assault or battery; (vii) on-air obscenity or impropriety, oral or visual; (viii) conduct involving moral turpitude; (ix) conduct punishable as a felony under state or federal law; (x) any action involving a breach of the terms of this Agreement; (xi) if, at any time, the Employee fails to conduct himself with dueregard to social conventions and public morals and decency, or if the Employee commits any act or becomes involved in any situation or occurrence which degrades the Employee in society or which brings the Employee into public disrepute, contempt, scandal or ridicule,or shocks, insults or offends the community, or which may reflect unfavorably upon the Employee, the Station, whether or not such information becomes public; (xiii) violation of any Federal Communications Commission rule or regulation; (xiv) incompetence; or (xv) violation of Company absenteeism policy. This Agreement shall be terminated by the death of the Employee as of the date of death. In the event of Employee's death, the Company shall pay to the Employee's legal representatives any accrued but unpaid compensation. All decisions made by the Employee must serve the financial good of the Company and all its affiliate enterpireses, as well as the political goals of the Company and its affiliates whether or not these goals are public knowledge. In the event of Employee's death, the Company shall pay to the Employee's legal representatives any accrued but unpaid compensation. All decisions made by the Employee must serve the financial good of the Company and all its affiliate enterpireses, as well as the political goals of the Company and its affiliates whether or not these goals are public knowledge. In the event of Employee's death, the Company shall pay to the Employee's legal representatives any accrued but unpaid compensation. All decisions made by the Employee must serve the financial good of the Company and all its affiliate enterpireses, as well as the political goals of the Company and its affiliates whether or not these goals are public knowledge. In the event of Employee's death, the Company shall pay to the Employee's legal representatives any accrued but unpaid compensation. All decisions made by the Employee must serve the financial good of the Company and all its affiliate enterpireses, as well as the political goals of the Company and its affiliates whether or not these goals are public knowledge."
+        //Note: party colors #009933 & #ff6600
+        var linda = {name:"Linda",age:47, salary: 36500, tagline: "Loyal, experienced, and will always remember your birthday.", experience:5,attractiveness:3};
+        var heather = {name:"Heather",age:25, salary: 42000, tagline: "Just getting started in the industry, but has a face for showbiz.", experience:2,attractiveness:8};
+        
+        var anchorList = [linda];
+        
+        var money = 30000;
+        var expenses = 30000;
+        var viewers = 45000;
+        var reputation = 20;
+        var endMoney;
+        var currentAnchor = linda;
+        var reputationText = "You're running a small time trusted local news source."
+        
+        var sliderValue;
+        
+        var adRevenue = 0;
+        var adTimeAvailible;
+        var storyTimeAvailible;
+        var toTell = [];
+        
+        var cycle = 0;
+        
+        var story0 = {name:"Local Politics", effect:"views -4;rep 4", breaking:false};
+        var story1 = {name:"National Politics", effect:"views 2;", breaking:false};
+        var story2 = {name:"Global Politics", effect:"rep 2;", breaking:false};
+        var story3 = {name:"Violent Crime", effect:"views 2", breaking:false};
+        var story4 = {name:"Celebrity News", effect:"views 2;rep -2", breaking:false};
+        
+        var electionStory0 = {name:"National Politics", effect:"orange 3", breaking:false};
+        var electionStory1 = {name:"National Politics", effect:"green 5", breaking:false};
+        var electionStory2 = {name:"Orange Candidate's Racist Remarks", effect:"green 15", breaking:true};
+        
+        var warStory0 = {name:"Onum Civil War", effect:"orange 3", breaking:false};
+        var warStory1 = {name:"Onum Civil War", effect:"green 5", breaking:false};
+        var warStory2 = {name:"US Troops Massacre Onum Civilians", effect:"green 15", breaking:true};
+        
+        var breakingNews1 = {name:"Local Shooting", effect:"views 5", breaking:true};
+        var breakingNews2 = {name:"Soca Cola Scandal", effect:"views 5", breaking:true};
+        var breakingNews3 = {name:"School Shooting", effect:"views 5;rep -9", breaking:true};
+        
+        var stories = [story0,story1,story2, story3,story4];
+        
+        var chosenStories = [];
+        
+        var ad1 = {name:"Soca Cola", value:28000, minutes:5, minRep: 10, maxRep: 50};
+        var ad2 = {name:"Pharmacuticals", value:12000, minutes:6, minRep: 13, maxRep: 50};
+        var ad3 = {name:"Gun Store", value:9000, minutes:4, minRep: 10, maxRep: 30};
+        var ad4 = {name:"Car Dealership", value:28000, minutes:8, minRep: 15, maxRep: 50};
+        var ad5 = {name:"Injury Lawyer", value:10000, minutes:6, minRep: 5, maxRep: 15};
+        var ad6 = {name:"Fine Dining", value:21000, minutes:5, minRep: 25, maxRep: 60};
+        var ad7 = {name:"Luxury Cruise", value:28000, minutes:5, minRep: 30, maxRep: 70};
+        var ad7 = {name:"Investment Bank", value:31000, minutes:5, minRep: 35, maxRep: 70};
+        var ad8 = {name:"Payday Loan", value:9000, minutes:6, minRep: 0, maxRep: 13};
+        var ad9 = {name:"Cash For Gold", value:5000, minutes:4, minRep: 0, maxRep: 10};
+        var ad10 = {name:"Green Party Evil", value:30000, minutes:4, minRep: 100, maxRep: 100};
+        var ad11 = {name:"Join the Navy", value:8000, minutes:6, minRep: 100, maxRep: 100};
+        
+        var ads = [ad1,ad2,ad3,ad4];
+        var adMaster = [ad1,ad2,ad3,ad4,ad5,ad6,ad7,ad8,ad9,ad10,ad11];
+        
+        
+        var storyTimeAvailible
+        
+        var socaStory = false;
+        
+        var tutorial = localStorage.getItem('tutorial');
+        
+        var phase = 0;
+        
+        if (tutorial == 0)
+            phase = 1;
+        
+        startTab();
+        displayStats();
+        displayAdvertising();
+        displayAnchors();
+        
+        if (tutorial != 0) {
+            setTimeout(function(){
+                introSpeech();
+            },100);
+        }
+             
+        var sliderLoop = setInterval(function() { sliderUpdate();}, 30);
+        
+        document.getElementById("dialogueBoxImage").style.width = window.innerWidth*0.90 + "px";
+        document.getElementById("dialogueBoxImage").style.height = window.innerHeight*0.29 + "px";
+        
+        function startTab() {
+            var tabLinks = document.getElementsByClassName("tabLinks");
+            document.getElementById("Board").style.display = "block";
+            tabLinks += " active";
+        }    
+        
+        function buttonPressed() {
+            if (getTextDone()) {
+                if (getCurrArrayPos() == getTextArray().length)
+                    $("#dialogueBox").hide();
+                else {
+                    setTextDone(false);
+                    newScroll(getTextArray()[getCurrArrayPos()]);
+                }   
+            }
+        }
+        
+        function incrementPhase() {
+            if (phase == 0 && tutorial != 0) {
+                $("#dialogueBox").show();
+                setTimeout(function(){
+                    document.getElementById("broadcastTab").style.backgroundColor = "gold";
+                },350);
+            }
+            else if (phase == 1 && tutorial != 0) {
+                $("#dialogueBox").show();
+                document.getElementById("broadcastTab").style.backgroundColor = "#ccc";
+                textScroll(module0Text[1]);
+            }
+            else if (phase >= 2 && phase <= 5 && tutorial != 0) {
+                $("#dialogueBox").show();
+                textScroll(module0Text[phase]);
+            }
+            else if (phase == 6) {
+                $("#dialogueBox").show();
+                if (socaStory)
+                    textScroll(module0Text[6]);
+                else
+                    textScroll(module0Text[7]);
+            }
+            else if (phase == 7 && cycle == 4) {
+                $("#dialogueBox").show();
+                textScroll(module0Text[8]);
+            }
+            
+            if (cycle < 4)
+                phase++;
+        }
+        
+        function adConfirmPress() {
+            $(".storyPlanning").show();
+            $("#adChosenConfirm").hide();
+            document.getElementById("storyAvailible").style = "display:inline; margin-right:30px";
+            document.getElementById("storyTotal").style = "display:inline";
+            toStoryMode();
+        }
+        
+        function introSpeech() {
+            $("#dialogueBox").show();
+            //textScroll(module0Text[0]); //code A1
+            textScroll(warText[0]); //code A1
+        }
+
+        function hireAnchor() {
+            if (currentAnchor != null) {
+                $("#dialogueBox").show();
+                textScroll("Unfortunately we can not have 2 anchors at this time.");
+            }
+            else {
+                currentAnchor = heather;
+                $("#heatherHire").hide();
+            }
+            reputation += heather.experience;
+            viewers += heather.attractiveness * 1500;
+        }
+        
+        function fireAnchor() {
+            $("#lindaPic").hide();
+            $("#lindaFire").hide();
+            /*index = anchorList.indexOf(linda);
+            if (index > -1) {
+                anchorList.splice(index, 1);
+            }*/
+            anchorList = [heather];
+            displayAnchors();
+            currentAnchor = null;
+            reputation -= linda.experience;
+            viewers -= linda.attractiveness * 1500;
+        }
+        
+        function displayStats() {
+            var table = "<tr><td style='font-size:24px' id='moneyDisplay'>Money: " + numToDisplayNum(money,true) + "</td></tr>";
+            table += "<tr><td style='font-size:24px'>Viewers: " + numToDisplayNum(viewers,false) + "</td></tr>";
+            table += "<tr><td style='font-size:24px'>Reputation: " + reputation + "</td></tr>";
+            table += "<tr><td style='font-size:24px; font-style:italic'>" + reputationText + "</td></tr>";
+            document.getElementById("statsTable").innerHTML = table;
+        }
+        
+        function displayMoneySheet() {
+            var total = adRevenue - currentAnchor.salary - expenses;
+            var table = "<tr><td style='font-size:24px'>Salary Paid: " + numToDisplayNum(currentAnchor.salary,true) + "</td></tr>";
+            table += "<tr><td style='font-size:24px'>Expenses: " + numToDisplayNum(expenses,true) + "</td></tr>";
+            table += "<tr><td style='font-size:24px'>Ad Revenue: " + numToDisplayNum(adRevenue,true) + "</td></tr>";
+            table += "<tr><td style='font-size:24px'>Net Total: " + numToDisplayNum(total,true) + "</td></tr>";
+            document.getElementById("moneySheet").innerHTML = table;
+        }
+        
+        function moneyAnimation() {
+            if (money > endMoney)
+                money -= 100;
+            else if (money < endMoney)
+                money += 100;
+            else
+                clearInterval(moneyLoop);
+            document.getElementById("moneyDisplay").innerHTML = "Money: " + numToDisplayNum(money,true);
+        }
+        
+        function endCycle() {
+            if (chosenStories[0] == null) {
+                $("#dialogueBox").show();
+                textScroll("You're not ready to broadcast yet! Check the broadcast pannel!");
+            }
+            else {
+                $("#transitionCard").show();
+                setTimeout(function(){
+                    $("#transitionCard").hide();
+                    incrementPhase();
+                },1200);
+                
+                document.getElementById("dayHeader").innerHTML = "Day " + (cycle+2);
+                endMoney = money + adRevenue - currentAnchor.salary - expenses;
+                
+                var animateMoney = setInterval(function() {
+                    if (money != endMoney)
+                        moneyAnimation();
+                    else {
+                        clearInterval(animateMoney);
+                        if (money < 0) {
+                            localStorage.setItem('cause', 'money');
+                            localStorage.setItem('finalAdRevenue', adRevenue);
+                            localStorage.setItem('finalSalary', currentAnchor.salary);
+                            localStorage.setItem('finalExpenses', expenses);
+                            //window.location.replace("gameOver.html");
+                        }
+                    }
+                },10);
+                
+                displayMoneySheet();
+                evalStories();
+                if (viewers <= 0) {
+                    localStorage.setItem('cause', 'viewers');
+                    window.location.replace("gameOver.html");
+                }
+                if (cycle == 4 && currentAnchor.name == "Heather") {
+                    reputationText = "People love your new anchor!";
+                }
+                if (toTell.length > 0)
+                    reputationText = "";
+                for (var i = 0; i < toTell.length; i++)
+                    reputationText += toTell[i]; 
+                displayStats();
+                
+                if (cycle < 5)
+                    stories = [story0,story1,story2, story3,story4];
+                else 
+                    stories = [story0,electionStory0,electionStory1,story2, story3,story4];
+                
+                if (cycle == 0) {
+                    var newList = [breakingNews1];
+                    for (var i = 0; i < stories.length; i++)
+                        newList.push(stories[i]);
+                    stories = newList;
+                }
+                else if (cycle == 1) {
+                    var newList = [breakingNews2];
+                    for (var i = 0; i < stories.length; i++)
+                        newList.push(stories[i]);
+                    stories = newList;
+                    document.getElementById("portrait").src ="art/exec.png";
+                }
+                else if (cycle == 3){
+                    $("#heatherPic").show();
+                    $("#heatherHire").show();
+                    $("#lindaFire").show();
+                    anchorList.push(heather);
+                    displayAnchors();
+                }
+                else if (cycle == 5) {
+                    $("#dialogueBox").show();
+                    textScroll(electionText[0]);
+                }
+                else if (cycle == 6) {
+                    ad10.minRep = 0;
+                    $("#dialogueBox").show();
+                    textScroll(electionText[1]);
+                    expenses += 10000;
+                    toTell[toTell.length] = " You're expense have gone up!";
+                }
+                else if (cycle == 7) {
+                    var newList = [electionStory2];
+                    for (var i = 0; i < stories.length; i++)
+                        newList.push(stories[i]);
+                    stories = newList;
+                }
+                else if (cycle == 8) {
+                    index = ads.indexOf(ad10);
+                    if (index > -1) {
+                        ads.splice(index, 1);
+                    }
+                    index = adMaster.indexOf(ad10);
+                    if (index > -1) {
+                        adMaster.splice(index, 1);
+                    }
+                    document.getElementById("portrait").src ="art/cop.png";
+                    stories = [breakingNews3,story0,story1,story2,story4];
+                    $("#dialogueBox").show();
+                    textScroll(module0Text[9]);
+                }
+                else if (cycle == 9) {
+                    document.getElementById("portrait").src="art/exec.png";
+                    stories = [warStory0,warStory1,story0,story1,story4];
+                    $("#dialogueBox").show();
+                    textScroll(warText[0]);
+                    expenses += 10000;
+                    toTell[toTell.length] = " You're expense have gone up!"
+                }
+                else if (cycle == 10) {
+                    $("#dialogueBox").show();
+                    textScroll(warText[1]);
+                    ad11.minRep = 0;
+                }
+                else if (cycle == 12) {
+                    var newList = [warStory2];
+                    for (var i = 0; i < stories.length; i++)
+                        newList.push(stories[i]);
+                    stories = newList;
+                }
+                toTell = "";
+                toStoryMode();
+                adReset();
+                cycle++;
+            }
+        }
+        
+        function evalStories() {
+            toTell = [];
+            var effects;
+            var amount;
+            var currEffect;
+
+            for (var i = 0; i < chosenStories.length; i++) {
+                if (chosenStories[i].effect != "none") {
+                    effects = chosenStories[i].effect.split(";");
+                    for (var j = 0; j < effects.length; j++) {
+                        currEffect = effects[j].split(" ")[0];
+                        amount = parseInt(effects[j].split(" ")[1]);
+                        if (currEffect == "rep")
+                            reputation = parseInt(reputation) + amount;
+                        else if (currEffect == "views")
+                            viewers = parseInt(viewers) + amount * 1500;
+                        else if (currEffect == "green") {
+                            viewers = parseInt(viewers) - amount * 1500;
+                        }
+                        else if (currEffect == "orange")
+                            viewers = parseInt(viewers) + amount * 1500;
+                    }
+                }
+                
+                if (chosenStories[i].breaking && chosenStories[i].effect!= "green 15") {
+                        toTell[toTell.length] = " People loved your coverage of the " + chosenStories[i].name.toLowerCase() + "!";
+                        if (chosenStories[i].name == "Soca Cola Scandal") {
+                            toTell[toTell.length] = " Soca Cola hated your coverage of the " + chosenStories[i].name.toLowerCase() + " and will no longer advertise with you. ";
+                            index = ads.indexOf(ad1);
+                            if (index > -1) {
+                                ads.splice(index, 1);
+                            }
+                            index = adMaster.indexOf(ad1);
+                            if (index > -1) {
+                                adMaster.splice(index, 1);
+                            }
+                            socaStory = true;
+                            displayAdvertising();
+                            adReset();
+                        }
+                }
+                else if (chosenStories[i].breaking && chosenStories[i].effect == "green 15")
+                    toTell[toTell.length] = " Orange viewers hated your coverage of the " + chosenStories[i].name.toLowerCase() + "!";
+            }
+            chosenStories = [];
+        }
+        
+        function adReset() {
+            adTimeAvailible = sliderValue;
+            adRevenue = 0;
+            ads = [];
+            for (var i = 0; i < adMaster.length; i++) {
+                if (reputation > adMaster[i].minRep && reputation < adMaster[i].maxRep)
+                    ads.push(adMaster[i]);
+            }
+            for (var i = 0; i < ads.length; i++) {
+                if(document.getElementById("adButton" + i) != null && document.getElementById("adButton" + i).className == "sellButton"){
+                    adRevenue += addViewerBonus(parseInt(ads[i].value));
+                    adTimeAvailible -= ads[i].minutes;
+                }
+            }
+            document.getElementById("adRevenue").innerHTML = "Total Revenue: " + numToDisplayNum(adRevenue, true);
+            document.getElementById("adAvailible").innerHTML = "Availible " + adTimeAvailible + ":00";
+            document.getElementById("adAvailible").style = "display:inline; margin-right:30px";
+            document.getElementById("adTotal").innerHTML = "Total: " + sliderValue + ":00";
+            document.getElementById("adTotal").style = "display:inline; margin-right:30px";
+            document.getElementById("adRevenue").style = "display:inline";
+            
+            var table = "";
+            for (var i = 0; i < ads.length; i++) {
+                table += "<tr>";
+                if (document.getElementById("adButton" + i) == null)
+                    table += "<td><button id='adButton" + i + "' class='addButton'";
+                else
+                    table += "<td><button id='adButton" + i + "' class='" + document.getElementById("adButton" + i).className +"'"; 
+                if (document.getElementById("adButton" + i) == null)
+                    table += "onclick='buyButtonClick(" + i + ")'>Add</button></td>"
+                else if (document.getElementById("adButton" + i).className == "addButton")
+                    table += "onclick='buyButtonClick(" + i + ")'>Add</button></td>"
+                else 
+                    table += "onclick='sellButtonClick(" + i + ")'>Remove</button></td>"
+                table += "<td style='margin-top:8px'>" + ads[i].name + ": " + numToDisplayNum(addViewerBonus(parseInt(ads[i].value)),true) + " for " + ads[i].minutes + " minutes." + "</td>";
+                table += "</tr>";
+            }
+            document.getElementById("advertisingTable").innerHTML = table;
+        }
+        
+        function toStoryMode() {
+            sliderValue = document.getElementById("adRange").value;
+            storyTimeAvailible = 60-parseInt(sliderValue);
+            chosenStories = [];
+            document.getElementById("storyAvailible").innerHTML = "Availible " + storyTimeAvailible + ":00";
+            document.getElementById("storyTotal").innerHTML = "Total: " + storyTimeAvailible + ":00";
+            displayStories();
+            displayBroadcast();
+            
+            if (phase == 3)
+                incrementPhase();
+        }
+        
+        function displayStories() {
+            var storyStyle = "";
+            var effects = [];
+            table = "";
+            for (var i = 0; i < stories.length; i++) {
+                effects = assignEffectImage(stories[i].effect);
+                
+                if (!stories[i].breaking)
+                    storyStyle = "";
+                else 
+                    storyStyle = "background:#FF251B; color:#FFFFFF";
+                table += "<tr>";
+                table += "<td><button id='addStory" + i + "' class='addButton' onclick='addStoryClick(" + i + ")'>Add</button></td>";
+                table += "<td style='font-size:28px;" + storyStyle + "'>" + stories[i].name + "</td>";
+                
+                for (var j = 0; j < effects.length; j++) {
+                    table += "<td><img src='art/" + effects[j] + "' style='width:32px; height:32px; float:left' alt='error loading image'></td>";
+                }
+                table += "</tr>";
+            }
+            document.getElementById("storyTable2").innerHTML = table;
+        }
+        
+        function assignEffectImage(given) {
+            var givenEffects = given.split(";");
+            var currEffect;
+            var result = [];
+
+            for (var i = 0; i < givenEffects.length; i++){
+                currEffect = givenEffects[i].split(" ");
+                if (currEffect[0] == "rep") {
+                    if (currEffect[1] > 0)
+                        result.push("repUp.png");
+                    else 
+                        result.push("repDown.png");
+                }
+
+                else if (currEffect[0] == "views") {
+                    if (currEffect[1] > 0)
+                        result.push("viewsUp.png");
+                    else 
+                        result.push("viewsDown.png");
+                }
+                else if (currEffect[0] == "green")
+                    result.push("greenParty.png");
+                else if (currEffect[0] == "orange")
+                    result.push("orangeParty.png");
+            }
+            return result;
+        }
+        
+        function displayBroadcast() {
+            table = "";
+            table += "<th style='float:left'><h1 class='storyPlanning'> Broadcast </h1></th>"; 
+            for (var i = 0; i < chosenStories.length; i++) {
+                if (!chosenStories[i].breaking)
+                    storyStyle = "";
+                else 
+                    storyStyle = "background:#FF251B; color:#FFFFFF";
+                table += "<tr>";
+                table += "<td>" + chosenStories[i].name + "</td></tr>";
+            }
+            if (chosenStories.length != 0) {
+                var repGain = 0;
+                var viewGain = 0;
+                var amount;
+                var currEffect;
+                var effects;
+                for (var i = 0; i < chosenStories.length; i++) {
+                    if (chosenStories[i].effect != "none") {
+                        effects = chosenStories[i].effect.split(";");
+                        for (var j = 0; j < effects.length; j++) {
+                            currEffect = effects[j].split(" ")[0];
+                            amount = parseInt(effects[j].split(" ")[1]);
+                            if (currEffect == "rep")
+                                repGain += amount;
+                            else if (currEffect == "views")
+                                viewGain += amount * 1500;
+                            else if (currEffect == "green") {
+                                viewGain -= amount * 1500;
+                            }
+                            else if (currEffect == "orange")
+                                viewGain += amount * 1500;
+                        }
+                    }
+                }
+                table += "<td><img src='art/viewsUp.png' style='width:32px; height:32px; float:left' alt='error loading image'></td>";
+                table += "<td>" + viewGain + "</td>";
+                table += "<td><img src='art/repUp.png' style='width:32px; height:32px; float:left' alt='error loading image'></td>";
+                table += "<td>" + repGain + "</td>";
+            }
+            
+            document.getElementById("broadcastTable").innerHTML = table;
+        }
+        
+        function displayAnchors() {
+            var table = "";
+            
+            for (var i = 0; i < anchorList.length; i++) {
+                if (anchorList[i].name == "Linda")
+                    table += "<tr><td style='font-size:24px'><u><b>" + anchorList[i].name + ", " + anchorList[i].age + "</b></u></td></tr>";
+                else 
+                    table += "<tr><td style='font-size:24px'><u><b>" + anchorList[i].name + ", " + anchorList[i].age + "</b></u></td><td><button id='heatherHire' class='addButtonTemp' onclick='hireAnchor()'> Hire </button></td></tr>";
+                table += "<tr><td>Salary: " + numToDisplayNum(anchorList[i].salary,true) + "</td></tr>";
+                table += "<tr><td>Experience: </td><td>";
+                for (var j = 0; j < anchorList[i].experience; j++)
+                    table += "<div class='statBar' style='background:#006666'></div>";
+                table += "</td></tr>"
+                table += "<tr><td>Appearance: </td><td>";
+                for (var k = 0; k < anchorList[i].attractiveness; k++)
+                    table += "<div class='statBar' style='background:#ff3300'></div>";
+                table += "</td></tr>";
+                table += "<tr><td><i>" + anchorList[i].tagline + "</i></td></tr>";
+                table += "<tr></tr>";
+            }
+            
+            document.getElementById("anchorTable").innerHTML = table;
+        }
+        
+        function displayAdvertising() {
+            var table = "";
+            for (var i = 0; i < ads.length; i++) {
+                table += "<tr>";
+                table += "<td><button id='adButton" + i + "' class='addButton' onclick='buyButtonClick(" + i + ")'>Add</button></td>"
+                table += "<td style='margin-top:8px'>" + ads[i].name + ": " + numToDisplayNum(addViewerBonus(parseInt(ads[i].value)),true) + " for " + ads[i].minutes + " minutes." + "</td>";
+                table += "</tr>";
+            }
+            document.getElementById("advertisingTable").innerHTML = table;
+        }
+        
+        function openTab(evt, tabName) {
+            var i, tabContent, tabLinks;
+            tabContent = document.getElementsByClassName("tabContent");
+            for (i = 0; i < tabContent.length; i++) {
+                tabContent[i].style.display = "none";
+            }
+            tabLinks = document.getElementsByClassName("tabLinks");
+            for (i = 0; i < tabLinks.length; i++) {
+                tabLinks[i].className = tabLinks[i].className.replace(" active", "");
+                tabLinks[i].style.backgroundColor = "#F1F1F1";
+            }
+
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.style.backgroundColor = "#CCC";
+            evt.currentTarget.className += " active";
+            
+            if (phase == 1 && tabName == "Broadcast")
+                incrementPhase();
+        }    
+        
+        function buyButtonClick(given) {
+            var button = document.getElementById("adButton" + given);
+            if (adTimeAvailible - ads[given].minutes >= 0) {
+                adTimeAvailible = adTimeAvailible - parseInt(ads[given].minutes);
+                button.className = "sellButton";
+                button.innerHTML = "Remove";
+                button.onclick = function(){sellButtonClick(given)};
+                document.getElementById("adAvailible").innerHTML = "Availible " + adTimeAvailible + ":00";
+                adRevenue += addViewerBonus(parseInt(ads[given].value));
+                document.getElementById("adRevenue").innerHTML = "Total Revenue: " + numToDisplayNum(adRevenue, true);
+            }
+            else {
+                warningFlash("adAvailible");
+            }
+        }
+        
+        function addStoryClick(given) {
+            var button = document.getElementById("addStory" + given);
+            var storyTime = 15;
+            if (stories[given].breaking)
+                storyTime = 20;
+            if (storyTimeAvailible - storyTime >= 0) {
+                storyTimeAvailible = storyTimeAvailible - storyTime;
+                button.className = "sellButton";
+                button.innerHTML = "Remove";
+                button.onclick = function(){removeStoryClick(given)};
+                document.getElementById("storyAvailible").innerHTML = "Availible " + storyTimeAvailible + ":00";
+                chosenStories[chosenStories.length] = stories[given];
+                displayBroadcast();
+            }
+            else {
+                warningFlash("storyAvailible");
+            }
+        }
+        
+        function removeStoryClick(given) {
+            var button = document.getElementById("addStory" + given);
+            var storyTime = 15;
+            if (stories[given].breaking)
+                storyTime = 20;
+            var index;
+            button.className = "addButton";
+            button.innerHTML = "Add";
+            button.onclick = function(){addStoryClick(given)};
+            storyTimeAvailible = storyTimeAvailible + storyTime;
+            document.getElementById("storyAvailible").innerHTML = "Availible " + storyTimeAvailible + ":00";
+            index = chosenStories.indexOf(stories[given]);
+            if (index > -1) {
+                chosenStories.splice(index, 1);
+            }
+            displayBroadcast();
+        }
+        
+        function warningFlash(id) {
+            var count = 0;
+            var weight = document.getElementById(id).style.fontWeight;
+            var flash = setInterval(function() {
+                document.getElementById(id).style.fontWeight = "900";
+                if (count % 2 == 0)
+                    document.getElementById(id).style.color = "red";  
+                else 
+                    document.getElementById(id).style.color = "black";
+                if (count == 11) {
+                    clearInterval(flash);
+                    document.getElementById(id).style.fontWeight = weight;
+                }
+                count++;
+                },150)  ;
+        }
+        
+        function sellButtonClick(given) {
+            var button = document.getElementById("adButton" + given);
+            button.className = "addButton";
+            button.innerHTML = "Add";
+            button.onclick = function(){buyButtonClick(given)};
+            adTimeAvailible = parseInt(adTimeAvailible) + parseInt(ads[given].minutes);
+            document.getElementById("adAvailible").innerHTML = "Availible " + adTimeAvailible + ":00";
+            adRevenue -= addViewerBonus(parseInt(ads[given].value));
+            document.getElementById("adRevenue").innerHTML = "Total Revenue: " + numToDisplayNum(adRevenue, true);
+        }
+        
+        function adTimingConfirm() {
+            $(".adPlanning").show();
+            if (phase < 3)
+                $("#adChosenConfirm").show();
+            updateAdAmounts();
+            resetChosen();
+            if (phase == 2)
+                incrementPhase();
+        }
+        
+        function resetChosen() {
+            for (var i = 0; i < ads.length; i++) {
+                button = document.getElementById("adButton" + i);
+                if (button.innerHTML == "Remove")
+                    sellButtonClick(i);
+            }
+            updateAdAmounts();
+            toStoryMode();
+        }
+        
+        function sliderUpdate() {
+            sliderValue = document.getElementById("adRange").value;
+            document.getElementById("adValue").innerHTML = "Advertisements " + sliderValue + ":00";
+            document.getElementById("newsValue").innerHTML = "News " + (60-sliderValue) + ":00";
+        }
+        
+        function addViewerBonus(given) {
+            var total = given/100;
+            var modifier = (viewers - 40000) / 100000;
+            total += parseInt(total * modifier);
+            total = total*100;
+            return total;
+        }
+        
+        function updateAdAmounts() {
+            sliderValue = document.getElementById("adRange").value;
+            document.getElementById("adRevenue").innerHTML = "Total Revenue: " + numToDisplayNum(adRevenue, true);
+            adTimeAvailible = sliderValue;
+            document.getElementById("adAvailible").innerHTML = "Availible " + sliderValue + ":00";
+            document.getElementById("adAvailible").style = "display:inline; margin-right:30px";
+            document.getElementById("adTotal").innerHTML = "Total: " + sliderValue + ":00";
+            document.getElementById("adTotal").style = "display:inline; margin-right:30px";
+            document.getElementById("adRevenue").style = "display:inline";
+        }
+        
+        function numToDisplayNum(num, dollar) {
+            var result;
+            
+            if (num > 999) {
+                result = parseInt(num/1000) + "," + num%1000;
+                result = longEnough(result); //ex: longEnough("10,0") = "10,000"
+            }
+            
+            else 
+                result = num;
+            
+            if (dollar)
+                result = "$" + result;
+
+            return result;
+        }
+        
+        function longEnough(given) {
+            if (given.split(",")[1].length < 3)
+                return longEnough(given + "0");
+            else 
+                return given;
+        }
     </script>
+    
+    <script src="game_files/textScroller.js">
+        
+    </script>
+    
+    <script src="game_files/texts.js"></script>
 </body>
 </html>
