@@ -19,7 +19,8 @@ function textScroll(text) {
     textArray = [];
     document.activeElement.blur(); //Kludged but stops "enter" during text from triggering buttons
     document.getElementById("textScroll").style.width = "88%";
-    clipText(text);
+    clipText(text);   //Prof wanted it more readable, doing the whole damn thing by hand, kludged together the night before
+    //makeBreaks(text);
     newScroll(textArray[currArrayPos]);
     textDone = false;
 }
@@ -28,6 +29,20 @@ function newScroll (text) {
     scrollCount = 0;
     scroll(text);
     textLoop = setInterval(function() { scroll(text); }, 5);
+}
+
+function makeBreaks(given) {
+    var lastEndpoint = 0;
+    for (var i = 0; i < given.length; i++) {
+        if (given.charAt(i) == ";") {
+            textArray[textArray.length] = given.substr(lastEndpoint,i);
+            lastEndpoint = i+1;
+            i++;
+        }
+        if (i == given.length-1) {
+            textArray[textArray.length] = given.substr(lastEndpoint,i);
+        }
+    }
 }
 
 function scroll(text) {
