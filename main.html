@@ -94,7 +94,7 @@
     </ul>
     
     <div id='Board' class = 'tabContent'>
-        <h1 id='dayHeader'> Day 1 </h1>
+        <h1 id='dayHeader'> Week 1 </h1>
         <table id="statsTable">
         </table>
         <table id="moneySheet"></table>
@@ -117,7 +117,7 @@
         </table>
         <h1> Allot Time </h1>
         <input id="adRange" class="adTiming" type="range" style = "margin-right: 20px" min = "5" max="25">
-        <button class="adTiming" onclick="adTimingConfirm()"> Confirm </button>
+        <button class="adTiming" id="adTimingButton" onclick="adTimingConfirm()"> Confirm </button>
         <p id="adValue" class="adTiming"> ERROR </p>
         <p id="newsValue" class="adTiming"> ERROR </p>
     </div>
@@ -156,12 +156,14 @@
         var anchorList = [linda];
         
         var money = 30000;
-        var expenses = 30000;
+        var expenses = 25000;
         var viewers = 45000;
         var reputation = 20;
         var endMoney;
         var currentAnchor = linda;
         var reputationText = "You're running a small time trusted local news source."
+        
+        var cycle = 0;
         
         var sliderValue;
         
@@ -169,8 +171,6 @@
         var adTimeAvailible;
         var storyTimeAvailible;
         var toTell = [];
-        
-        var cycle = 0;
         
         var story0 = {name:"Local Politics", effect:"views -4;rep 4", breaking:false};
         var story1 = {name:"National Politics", effect:"views 2;", breaking:false};
@@ -188,7 +188,7 @@
         
         var breakingNews1 = {name:"Local Shooting", effect:"views 5", breaking:true};
         var breakingNews2 = {name:"Soca Cola Scandal", effect:"views 5", breaking:true};
-        var breakingNews3 = {name:"School Shooting", effect:"views 5;rep -9", breaking:true};
+        var breakingNews3 = {name:"School Shooter", effect:"views 5;rep -9", breaking:true};
         
         var stories = [story0,story1,story2, story3,story4];
         
@@ -204,20 +204,21 @@
         var ad7 = {name:"Investment Bank", value:31000, minutes:5, minRep: 35, maxRep: 70};
         var ad8 = {name:"Payday Loan", value:9000, minutes:6, minRep: 0, maxRep: 13};
         var ad9 = {name:"Cash For Gold", value:5000, minutes:4, minRep: 0, maxRep: 10};
-        var ad10 = {name:"Green Party Evil", value:30000, minutes:4, minRep: 100, maxRep: 100};
+        var ad10 = {name:"Anti Green Party Attack Ad", value:30000, minutes:4, minRep: 100, maxRep: 100};
         var ad11 = {name:"Join the Navy", value:8000, minutes:6, minRep: 100, maxRep: 100};
         
         var ads = [ad1,ad2,ad3,ad4];
         var adMaster = [ad1,ad2,ad3,ad4,ad5,ad6,ad7,ad8,ad9,ad10,ad11];
         
-        
         var storyTimeAvailible
+        var timeHold;
         
         var socaStory = false;
         
         var tutorial = localStorage.getItem('tutorial');
         
         var phase = 0;
+        var consequences = [0,0,0,0,0];
         
         if (tutorial == 0)
             phase = 1;
@@ -297,8 +298,7 @@
         
         function introSpeech() {
             $("#dialogueBox").show();
-            //textScroll(module0Text[0]); //code A1
-            textScroll(warText[0]); //code A1
+            textScroll(module0Text[0]);
         }
 
         function hireAnchor() {
@@ -317,6 +317,7 @@
         function fireAnchor() {
             $("#lindaPic").hide();
             $("#lindaFire").hide();
+            consequences[4] = 1;
             /*index = anchorList.indexOf(linda);
             if (index > -1) {
                 anchorList.splice(index, 1);
@@ -370,6 +371,10 @@
                 document.getElementById("dayHeader").innerHTML = "Day " + (cycle+2);
                 endMoney = money + adRevenue - currentAnchor.salary - expenses;
                 
+                var tempTime = 10; //kludge alert its 2:00am
+                if (endMoney < 0) {
+                    tempTime = 1;
+                }
                 var animateMoney = setInterval(function() {
                     if (money != endMoney)
                         moneyAnimation();
@@ -377,19 +382,16 @@
                         clearInterval(animateMoney);
                         if (money < 0) {
                             localStorage.setItem('cause', 'money');
-                            localStorage.setItem('finalAdRevenue', adRevenue);
-                            localStorage.setItem('finalSalary', currentAnchor.salary);
-                            localStorage.setItem('finalExpenses', expenses);
-                            //window.location.replace("gameOver.html");
+                            gameOver();
                         }
                     }
-                },10);
+                },tempTime);
                 
                 displayMoneySheet();
                 evalStories();
                 if (viewers <= 0) {
                     localStorage.setItem('cause', 'viewers');
-                    window.location.replace("gameOver.html");
+                    gameOver();
                 }
                 if (cycle == 4 && currentAnchor.name == "Heather") {
                     reputationText = "People love your new anchor!";
@@ -417,6 +419,7 @@
                         newList.push(stories[i]);
                     stories = newList;
                     document.getElementById("portrait").src ="art/exec.png";
+                    consequences[0] = -1;
                 }
                 else if (cycle == 3){
                     $("#heatherPic").show();
@@ -424,23 +427,25 @@
                     $("#lindaFire").show();
                     anchorList.push(heather);
                     displayAnchors();
+                    consequences[4] = -1;
                 }
                 else if (cycle == 5) {
                     $("#dialogueBox").show();
                     textScroll(electionText[0]);
+                    expenses += 12000;
+                    toTell[toTell.length] = " Your expense have gone up!";
                 }
                 else if (cycle == 6) {
                     ad10.minRep = 0;
                     $("#dialogueBox").show();
                     textScroll(electionText[1]);
-                    expenses += 10000;
-                    toTell[toTell.length] = " You're expense have gone up!";
                 }
                 else if (cycle == 7) {
                     var newList = [electionStory2];
                     for (var i = 0; i < stories.length; i++)
                         newList.push(stories[i]);
                     stories = newList;
+                    consequences[2] = -1;
                 }
                 else if (cycle == 8) {
                     index = ads.indexOf(ad10);
@@ -455,14 +460,15 @@
                     stories = [breakingNews3,story0,story1,story2,story4];
                     $("#dialogueBox").show();
                     textScroll(module0Text[9]);
+                    consequences[1] = -1;
                 }
                 else if (cycle == 9) {
                     document.getElementById("portrait").src="art/exec.png";
                     stories = [warStory0,warStory1,story0,story1,story4];
                     $("#dialogueBox").show();
                     textScroll(warText[0]);
-                    expenses += 10000;
-                    toTell[toTell.length] = " You're expense have gone up!"
+                    expenses += 15000;
+                    toTell[toTell.length] = " Your expense have gone up!"
                 }
                 else if (cycle == 10) {
                     $("#dialogueBox").show();
@@ -474,12 +480,30 @@
                     for (var i = 0; i < stories.length; i++)
                         newList.push(stories[i]);
                     stories = newList;
+                    consequences[3] = -1;
+                }
+                else if (cycle == 14) {
+                    localStorage.setItem('cause', 'victory');
+                    gameOver();
                 }
                 toTell = "";
                 toStoryMode();
                 adReset();
                 cycle++;
             }
+        }
+        
+        function gameOver() {
+            localStorage.setItem('finalAdRevenue', adRevenue);
+            localStorage.setItem('finalSalary', currentAnchor.salary);
+            localStorage.setItem('finalExpenses', expenses);
+            localStorage.setItem('finalViewers', viewers);
+            localStorage.setItem('finalRep', reputation);
+            localStorage.setItem('finalWeek',cycle+2);
+            for (var i = 0; i < consequences.length; i++) {
+                localStorage.setItem('writeUp' + i,consequences[i]);
+            }
+            window.location.replace("gameOver.html");
         }
         
         function evalStories() {
@@ -525,6 +549,15 @@
                 }
                 else if (chosenStories[i].breaking && chosenStories[i].effect == "green 15")
                     toTell[toTell.length] = " Orange viewers hated your coverage of the " + chosenStories[i].name.toLowerCase() + "!";
+                
+                if (chosenStories[i] == breakingNews2)
+                    consequences[0] = 1;
+                if (chosenStories[i] == breakingNews3)
+                    consequences[1] = 1;
+                if (chosenStories[i] == electionStory2)
+                    consequences[2] = 1;
+                if (chosenStories[i] == warStory2)
+                    consequences[3] = 1;
             }
             chosenStories = [];
         }
@@ -595,8 +628,14 @@
                     storyStyle = "background:#FF251B; color:#FFFFFF";
                 table += "<tr>";
                 table += "<td><button id='addStory" + i + "' class='addButton' onclick='addStoryClick(" + i + ")'>Add</button></td>";
-                table += "<td style='font-size:28px;" + storyStyle + "'>" + stories[i].name + "</td>";
                 
+                if(stories[i].name == "Celebrity News")
+                    table += "<td style='font-size:28px;" + storyStyle + "'>" + stories[i].name + " (Fills Time)</td>";
+                else if (!stories[i].breaking)
+                    table += "<td style='font-size:28px;" + storyStyle + "'>" + stories[i].name + " (15:00)</td>";
+                else 
+                    table += "<td style='font-size:28px;" + storyStyle + "'>" + stories[i].name + " (20:00)</td>";
+                    
                 for (var j = 0; j < effects.length; j++) {
                     table += "<td><img src='art/" + effects[j] + "' style='width:32px; height:32px; float:left' alt='error loading image'></td>";
                 }
@@ -655,7 +694,12 @@
                         effects = chosenStories[i].effect.split(";");
                         for (var j = 0; j < effects.length; j++) {
                             currEffect = effects[j].split(" ")[0];
-                            amount = parseInt(effects[j].split(" ")[1]);
+                            if (chosenStories[i].name != "Celebrity News")
+                                amount = parseInt(effects[j].split(" ")[1]);
+                            else if (currEffect == "rep")
+                                amount = -1*(parseInt(timeHold/15) + 1);
+                            else 
+                                amount = parseInt(timeHold/15) + 1;
                             if (currEffect == "rep")
                                 repGain += amount;
                             else if (currEffect == "views")
@@ -668,9 +712,17 @@
                         }
                     }
                 }
-                table += "<td><img src='art/viewsUp.png' style='width:32px; height:32px; float:left' alt='error loading image'></td>";
+                
+                if (viewGain >= 0)
+                    table += "<td><img src='art/viewsUp.png' style='width:32px; height:32px; float:left' alt='error loading image'></td>";
+                else 
+                    table += "<td><img src='art/viewsDown.png' style='width:32px; height:32px; float:left' alt='error loading image'></td>";
                 table += "<td>" + viewGain + "</td>";
-                table += "<td><img src='art/repUp.png' style='width:32px; height:32px; float:left' alt='error loading image'></td>";
+                
+                if (repGain >= 0)
+                    table += "<td><img src='art/repUp.png' style='width:32px; height:32px; float:left' alt='error loading image'></td>";
+                else 
+                    table += "<td><img src='art/repDown.png' style='width:32px; height:32px; float:left' alt='error loading image'></td>";
                 table += "<td>" + repGain + "</td>";
             }
             
@@ -753,7 +805,18 @@
             var storyTime = 15;
             if (stories[given].breaking)
                 storyTime = 20;
-            if (storyTimeAvailible - storyTime >= 0) {
+            if (stories[given].name == "Celebrity News") {
+                timeHold = storyTimeAvailible;
+                storyTimeAvailible = 0;
+                button.className = "sellButton";
+                button.innerHTML = "Remove";
+                button.onclick = function(){removeStoryClick(given)};
+                document.getElementById("storyAvailible").innerHTML = "Availible " + storyTimeAvailible + ":00";
+                chosenStories[chosenStories.length] = stories[given];
+                displayBroadcast();
+                
+            }
+            else if (storyTimeAvailible - storyTime >= 0) {
                 storyTimeAvailible = storyTimeAvailible - storyTime;
                 button.className = "sellButton";
                 button.innerHTML = "Remove";
@@ -773,14 +836,27 @@
             if (stories[given].breaking)
                 storyTime = 20;
             var index;
-            button.className = "addButton";
-            button.innerHTML = "Add";
-            button.onclick = function(){addStoryClick(given)};
-            storyTimeAvailible = storyTimeAvailible + storyTime;
-            document.getElementById("storyAvailible").innerHTML = "Availible " + storyTimeAvailible + ":00";
-            index = chosenStories.indexOf(stories[given]);
-            if (index > -1) {
-                chosenStories.splice(index, 1);
+            if (stories[given].name == "Celebrity News") {
+                button.className = "addButton";
+                button.innerHTML = "Add";
+                button.onclick = function(){addStoryClick(given)};
+                storyTimeAvailible = storyTimeAvailible + timeHold;
+                document.getElementById("storyAvailible").innerHTML = "Availible " + storyTimeAvailible + ":00";
+                index = chosenStories.indexOf(stories[given]);
+                if (index > -1) {
+                    chosenStories.splice(index, 1);
+                }
+            }
+            else {
+                button.className = "addButton";
+                button.innerHTML = "Add";
+                button.onclick = function(){addStoryClick(given)};
+                storyTimeAvailible = storyTimeAvailible + storyTime;
+                document.getElementById("storyAvailible").innerHTML = "Availible " + storyTimeAvailible + ":00";
+                index = chosenStories.indexOf(stories[given]);
+                if (index > -1) {
+                    chosenStories.splice(index, 1);
+                }
             }
             displayBroadcast();
         }
@@ -814,7 +890,11 @@
         }
         
         function adTimingConfirm() {
+            $("#adTimingButton").hide();
             $(".adPlanning").show();
+            document.getElementById("adTotal").style = "display:inline; margin-right:30px";
+            document.getElementById("adRevenue").style = "display:inline";
+            document.getElementById("adAvailible").style = "display:inline; margin-right:30px";
             if (phase < 3)
                 $("#adChosenConfirm").show();
             updateAdAmounts();
@@ -834,7 +914,12 @@
         }
         
         function sliderUpdate() {
+            var temp = sliderValue;
             sliderValue = document.getElementById("adRange").value;
+            if (temp != sliderValue) {
+                updateAdAmounts();
+                resetChosen();
+            }
             document.getElementById("adValue").innerHTML = "Advertisements " + sliderValue + ":00";
             document.getElementById("newsValue").innerHTML = "News " + (60-sliderValue) + ":00";
         }
@@ -852,25 +937,25 @@
             document.getElementById("adRevenue").innerHTML = "Total Revenue: " + numToDisplayNum(adRevenue, true);
             adTimeAvailible = sliderValue;
             document.getElementById("adAvailible").innerHTML = "Availible " + sliderValue + ":00";
-            document.getElementById("adAvailible").style = "display:inline; margin-right:30px";
             document.getElementById("adTotal").innerHTML = "Total: " + sliderValue + ":00";
-            document.getElementById("adTotal").style = "display:inline; margin-right:30px";
-            document.getElementById("adRevenue").style = "display:inline";
         }
         
         function numToDisplayNum(num, dollar) {
             var result;
+            num = parseInt(num);
             
-            if (num > 999) {
-                result = parseInt(num/1000) + "," + num%1000;
+            if (num > 999 || num < -999) {
+                result = parseInt(num/1000) + "," + Math.abs(num%1000);
                 result = longEnough(result); //ex: longEnough("10,0") = "10,000"
             }
             
             else 
                 result = num;
             
-            if (dollar)
+            if (dollar && num >= 0)
                 result = "$" + result;
+            else if (dollar && num < 0)
+                result = "-$" + result.substr(1,result.length);
 
             return result;
         }
