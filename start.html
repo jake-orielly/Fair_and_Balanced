@@ -85,12 +85,18 @@
                 var firstName = document.getElementById("firstName").value;
                 var lastName = document.getElementById("lastName").value;
                 var currText = text[0] + " " + honorific + " " + lastName + text[1];
-                textScroll(currText);
-                document.getElementById("employeeName").innerHTML = firstName + " " + lastName;
-                document.getElementById("employmentContract").innerHTML = employmentContractText;
-                $(".form").hide();
-                $(".contract").show();
-                submitted = true;
+                if (!document.getElementById('checkBox').checked) {
+                    localStorage.setItem('tutorial', 0);
+                    window.location.replace("main.html");
+                }
+                else {
+                    textScroll(currText);
+                    document.getElementById("employeeName").innerHTML = firstName + " " + lastName;
+                    document.getElementById("employmentContract").innerHTML = employmentContractText;
+                    $(".form").hide();
+                    $(".contract").show();
+                    submitted = true;
+                }
             }
         }
         

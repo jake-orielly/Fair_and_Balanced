@@ -140,9 +140,9 @@
     </div>
     
     <script>
-        var module0Text = ["This is the Channel 5 News Room! This is where you'll be making all the important decisions about the network!; The first thing we need to do is go over to the broadcast tab!", "First move the slider to divide your time between commercials and news.; Too much news and we won't be able to pay the bills. Too much advertising and people won't want to watch.","Now select which ads to schedule for the program. If we get more viewers we will make more money from ads.; Our reputation will affect what ads are availible to us, the higher the better.","Now you just have to select which stories to air and we'll be ready to broadcast!; Stories with a green person symbol improve viewership. Stories with a green star symbol increase reputation.; The red symbols stand for decreases. Once you're done, go to the \"Board\" tab and start the broadcast!","Some poor man was shot today. Terrible as it is we have to remain professional about this situation.; When these terrible things happen, we have a responsibility to get the information out to the public.; How else can they stay safe? We call these \"Breaking News Stories\". They are very important to the station.; They will affect our viewership and reputation much more than other stories.; However, they do take longer than a normal story to cover.","Hello. I am Mr. Sullivan, the Board of Director's representative.; We here at channel 5 are first and foremost an institute of journalism, and we always will be.; However we also have a responsibility to our investors to remain profitable.; Sometimes, we have to make sacrifices in the short term to ensure the station can keep running long term.; To that end, one of our journalists has written a story about a Soca Cola \"scandal\".; As they are one of our biggest advertisers, I personally called and asked them about this story.; They assured me it was nothing but a misunderstanding, their drink does not cause people's teeth to fall out.; They requested that we wait to cover this story until we have all the facts.; While you have creative control at the station, I hope you will use discretion in regards to this matter.","Because you decided to rush ahead and run that Soca Cola story they've decided to pull their advertising.; I hope that in the future you will be more prudent in these matters.; We sometimes have to make tough decisions, and I worry about how your decision will affect the station.","I noticed you decided not to run the Soca Cola story.; I appreciate your prudence in this matter and I know they do as well.; We sometimes have to make tough decisions in this business, and I'm glad to know I can count on you.","We received a very promising application for the position of anchor here, who I hope you will consider.; Linda has been good to this company, but we have to make our decisions based on the company as a whole.; This new anchor could bring a fresh face that would really help our image.","Hello. My name is Officer Bradford, I'm here on behalf of the local police force.; There was a tragic school shooting yesterday, and we're asking all local news stations not to run the story.; We believe it will only glorify the shooter, inspire copycats, and bring more pain to the grieving families.; I hope you will use your best judgement on this issue."];
+        var module0Text = ["This is the Channel 5 News Room! This is where you'll be making all the important decisions about the network!; The first thing we need to do is go over to the broadcast tab!", "First move the slider to divide your time between commercials and news.; Too much news and we won't be able to pay the bills. Too much advertising and people won't want to watch.","Now select which ads to schedule for the program. If we get more viewers we will make more money from ads.; Our reputation will affect what ads are available to us, the higher the better.","Now you just have to select which stories to air and we'll be ready to broadcast!; Stories with a green person symbol improve viewership. Stories with a green star symbol increase reputation.; The red symbols stand for decreases. Once you're done, go to the \"Board\" tab and start the broadcast!","Some poor man was shot today. Terrible as it is we have to remain professional about this situation.; When these awful things happen, we have a responsibility to get the information out to the public.; How else can they stay safe? We call these \"Breaking News Stories\". They are very important to the station.; They will affect our viewership and reputation much more than other stories.; However, they do take longer than a normal story to cover.","Hello. I am Mr. Sullivan, the Board of Director's representative.; We here at channel 5 are first and foremost an institute of journalism, and we always will be.; However we also have a responsibility to our investors to remain profitable.; Sometimes, we have to make sacrifices in the short term to ensure the station can keep running long term.; To that end, one of our journalists has written a story about a Soca Cola \"scandal\".; As they are one of our biggest advertisers, I personally called and asked them about this story.; They assured me it was nothing but a misunderstanding, their drink does not cause people's teeth to fall out.; They requested that we wait to cover this story until we have all the facts.; While you have creative control at the station, I hope you will use discretion in regards to this matter.","Because you decided to rush ahead and run that Soca Cola story they've decided to pull their advertising.; I hope that in the future you will be more prudent in these matters.; We sometimes have to make tough decisions, and I worry about how your decision will affect the station.","I noticed you decided not to run the Soca Cola story.; I appreciate your prudence in this matter and I know they do as well.; We sometimes have to make tough decisions in this business, and I'm glad to know I can count on you.","We received a very promising application for the position of anchor here, who I hope you will consider.; Linda has been good to this company, but we have to make our decisions based on the company as a whole.; This new anchor could bring a fresh face that would really help our image.; The more experience an anchor has, the more professional they will be, which improves our reputation.; The more attractive an anchor is, the more likely people will be to tune in, which improves viewership.","Hello. My name is Officer Bradford, I'm here on behalf of the local police force.; There was a tragic school shooting yesterday, and we're asking all local news stations not to run the story.; We believe it will only glorify the shooter, inspire copycats, and bring more pain to the grieving families.; I hope you will use your best judgement on this issue."];
         
-        var electionText = ["Election season is starting up, and that means a lot of opportunities for the station.; We pride ourselves on presenting fair and balanced political coverage here at Channel 5.; However most of our viewers are Orange party voters, and we should respect their opinions as political consumers.; Stories with a political leaning will be marked with the appropriate orange or green logo.","We've just been offered a lucrative new advertsing bid, be sure to check the advertising section."];
+        var electionText = ["Election season is starting up, and that means a lot of opportunities for the station.; We pride ourselves on presenting fair and balanced political coverage here at Channel 5.; However most of our viewers are Orange party voters, and we should respect their opinions as political consumers.; Stories with a political leaning will be marked with the appropriate orange or green logo.","We've just been offered a lucrative new advertising bid, be sure to check the advertising section."];
         
         var warText = ["I'm sure you've heard by now that the US has decided to intervene in the civil war in Onum.; We're all proud patriots here, as are our viewers, and the rest of the orange party.; I'm sure I don't have to spell out the important role of news stations during war time.","Our armed forces have honored us with an advertising bid. I hope you will give it careful consideration."];
         
@@ -171,6 +171,8 @@
         var adTimeAvailible;
         var storyTimeAvailible;
         var toTell = [];
+        
+        var viewsMod = 1500;
         
         var story0 = {name:"Local Politics", effect:"views -4;rep 4", breaking:false};
         var story1 = {name:"National Politics", effect:"views 2;", breaking:false};
@@ -368,13 +370,9 @@
                     incrementPhase();
                 },1200);
                 
-                document.getElementById("dayHeader").innerHTML = "Day " + (cycle+2);
+                document.getElementById("dayHeader").innerHTML = "Week " + (cycle+2);
                 endMoney = money + adRevenue - currentAnchor.salary - expenses;
                 
-                var tempTime = 10; //kludge alert its 2:00am
-                if (endMoney < 0) {
-                    tempTime = 1;
-                }
                 var animateMoney = setInterval(function() {
                     if (money != endMoney)
                         moneyAnimation();
@@ -385,7 +383,10 @@
                             gameOver();
                         }
                     }
-                },tempTime);
+                },5);
+                
+                if (viewers > 70000)
+                    viewsMod = 1000;
                 
                 displayMoneySheet();
                 evalStories();
@@ -521,12 +522,12 @@
                         if (currEffect == "rep")
                             reputation = parseInt(reputation) + amount;
                         else if (currEffect == "views")
-                            viewers = parseInt(viewers) + amount * 1500;
+                            viewers = parseInt(viewers) + amount * viewsMod;
                         else if (currEffect == "green") {
                             viewers = parseInt(viewers) - amount * 1500;
                         }
                         else if (currEffect == "orange")
-                            viewers = parseInt(viewers) + amount * 1500;
+                            viewers = parseInt(viewers) + amount * viewsMod;
                     }
                 }
                 
@@ -703,12 +704,12 @@
                             if (currEffect == "rep")
                                 repGain += amount;
                             else if (currEffect == "views")
-                                viewGain += amount * 1500;
+                                viewGain += amount * viewsMod;
                             else if (currEffect == "green") {
                                 viewGain -= amount * 1500;
                             }
                             else if (currEffect == "orange")
-                                viewGain += amount * 1500;
+                                viewGain += amount * viewsMod;
                         }
                     }
                 }
